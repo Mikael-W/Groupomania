@@ -7,7 +7,7 @@
     <div class="userlog">
       <input type="email" placeholder="email" />
       <input type="password" placeholder="Mot de passe" />
-      <button class="logbtn">Connexion</button>
+      <router-link to="/Home" class="logbtn">Connexion</router-link>
       <span>Pas encore inscrit ?</span>
       <button @click="signupModal = true" class="signupBtn">S'incrire</button>
     </div>
@@ -15,15 +15,20 @@
       <div v-if="signupModal" class="Signup-modal">
         <div class="overlay"></div>
           <div class="userSignup">
-            <h1>S'INSCRIRE</h1>
+            <div class="signup-title">
+            <h1>S'inscrire</h1>
             <p>C'est facile et rapide !</p>
+            </div>
+            <button @click="signupModal=false" class="closemodalbtn">X</button>
+            <div class="signup-form">
             <div class="names">
             <input class="fname" type="text" placeholder="Prénom" />
             <input class="lname" type="text" placeholder="Nom de famille" />
             </div>
             <input type="email" placeholder="Email" />
             <input type="password" placeholder="Nouveau mot de passe"/>
-            <button @click=" signupModal=false" class="signupBtn">S'incrire</button>
+            <router-link class="signupBtn" to="/Home">S'incrire</router-link>
+            </div>
           </div>
       </div>
     </teleport>
@@ -61,8 +66,14 @@ export default {
 img {
   width: 80%;
 }
-p {
-  font-size: 1.5rem;
+h1 {
+  font-size: 2rem;
+  color: #042a5f;
+}
+p{
+  font-size: 1rem;
+  margin: 0 0 1rem 0;
+  color: #042a5f;
 }
 .userlog {
   grid-column-start: 2;
@@ -70,7 +81,7 @@ p {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 50vw;
+  width: 45vw;
   margin: 5vh 0;
   background: #d3d3d3;
 }
@@ -82,28 +93,46 @@ input {
   border: 1px solid #d3d3d3;
   background: white;
   text-indent: 10px;
+  outline-color: transparent;
 }
 .logbtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 90%;
   height: 6vh;
   font-size: 100%;
   margin: 3vh 0;
   background: #042a5f;
-  border-color: #042a5f;
+  border-style: none;;
   border-radius: 6px;
   color: white;
+  font-weight: bold;
 }
 .signupBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 70%;
-  height: 4vh;
+  height: 6vh;
   font-size: 100%;
   margin: 3vh 0;
-  background: #004f29;
-  border-color: #004f29;
+  background: #118c33;
   border-radius: 6px;
   color: white;
-  padding-top: 6px;
+  font-weight: bold;
   text-align: center;
+  border-style: none;
+}
+.closemodalbtn{
+  position: absolute;
+  top:1rem;
+  right:0.5rem;
+  border: none;
+  background: white;
+  color: #042a5f;
+  font-weight: bold;
+  font-size:1rem;
 }
 a {
   text-decoration: none;
@@ -130,14 +159,25 @@ a {
 }
 .userSignup {
   z-index: 1;
+  position: relative;
   width: 50vw;
   height:auto;
-  display: flex;
-  flex-direction: column;
   align-items: center;
   background: white;
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 12px 12px 2px 1px rgba(0, 0, 0, 0.1);;
+}
+.signup-title{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width:100%;
+}
+.signup-form{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 .names{
   display: flex;
