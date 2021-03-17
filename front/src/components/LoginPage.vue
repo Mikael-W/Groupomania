@@ -9,19 +9,21 @@
       <input type="password" placeholder="Mot de passe" />
       <button class="logbtn">Connexion</button>
       <span>Pas encore inscrit ?</span>
-      <button class="signupBtn">S'incrire</button>
+      <button @click="signupModal = true" class="signupBtn">S'incrire</button>
     </div>
     <teleport to="#modals">
-      <div class="bloc-modal">
+      <div v-if="signupModal" class="Signup-modal">
         <div class="overlay"></div>
           <div class="userSignup">
             <h1>S'INSCRIRE</h1>
             <p>C'est facile et rapide !</p>
-            <input type="text" placeholder="Prénom" />
-            <input type="text" placeholder="Nom de famille" />
+            <div class="names">
+            <input class="fname" type="text" placeholder="Prénom" />
+            <input class="lname" type="text" placeholder="Nom de famille" />
+            </div>
             <input type="email" placeholder="Email" />
             <input type="password" placeholder="Nouveau mot de passe"/>
-            <button class="signupBtn">S'incrire</button>
+            <button @click=" signupModal=false" class="signupBtn">S'incrire</button>
           </div>
       </div>
     </teleport>
@@ -32,6 +34,13 @@
 </template>
 
 <script>
+export default {
+  data () {
+    return{
+      signupModal:false
+    }
+  },
+}
 </script>
 
 <style scoped>
@@ -72,6 +81,7 @@ input {
   margin-bottom: 2vh;
   border: 1px solid #d3d3d3;
   background: white;
+  text-indent: 10px;
 }
 .logbtn {
   width: 90%;
@@ -98,7 +108,7 @@ input {
 a {
   text-decoration: none;
 }
-.bloc-modal{
+.Signup-modal{
   position: fixed;
   top:0;
   bottom:0;
@@ -120,13 +130,25 @@ a {
 }
 .userSignup {
   z-index: 1;
-  display: flex;
   width: 50vw;
   height:auto;
+  display: flex;
   flex-direction: column;
   align-items: center;
   background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 12px 12px 2px 1px rgba(0, 0, 0, 0.1);;
+}
+.names{
+  display: flex;
+  justify-content: space-between;
+  width:90%;
+}
+.fname{
+  width: 45%;
+}
+.lname{
+  width: 50%;
 }
 
 </style>
