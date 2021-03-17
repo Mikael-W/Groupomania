@@ -1,25 +1,21 @@
 <template>
   <div class="Signup">
-    <SignupPage />
+    <SignupModal/>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import SignupPage from '@/components/SignupPage.vue'
+import SignupModal from '@/components/SignupModal.vue'
 
 export default {
   name: 'Signup',
   components: {
-    SignupPage
+    SignupModal
   }
 }
 </script>
 
 <style scoped>
-.Signup{
-  display: flex;
-  justify-content: center;
-  margin: 5vh 0;
-}
+
 </style>

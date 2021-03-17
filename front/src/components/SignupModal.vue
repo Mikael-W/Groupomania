@@ -1,5 +1,10 @@
 <template>
-  <div class="userlog">
+  <div class="signup">
+    <teleport>
+   <div class="bloc-modal">
+      <div class="overlay"></div>
+      <div class="modal-card">
+  <div class="userSignup">
     <h1>S'INSCRIRE</h1>
     <img class="photo" src="../assets/photo.png" alt="">
     <div class="form">
@@ -20,20 +25,22 @@
     </div>
     <button class="logbtn">connection</button>
   </div>
+      </div>
+  </div>
+  </teleport>
+  </div>
 </template>
 
 <script>
 export default {
-  name: 'Signup',
-  props: {
-    msg: String
-  }
+  setup() {
+},
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
-.userlog{
+.userSignup{
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -78,5 +85,18 @@ input{
   border-radius: 2rem;
   color: white;
 }
-
+.form{
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: #d3d3d3;
+}
+.photo{
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  margin: 5vh 0 ;
+  border: 1px solid black;
+  background: #ededed;
+}
 </style>

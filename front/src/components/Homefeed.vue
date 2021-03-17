@@ -27,13 +27,63 @@
 <script>
 export default {
   name: 'Home',
-  props: {
-    msg: String
-  }
 }
 </script>
 
 <style scoped>
+header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100vw;
+  background: #042a5f;
+}
+h1{
+    color: #f92d02;
+}
+.logo{
+  width: 20vw;
+  padding: 1rem;
+  background: #042a5f;
+}
+.search-wrapper{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 4vh;
+  background: #d3d3d3;
+}
+.search-input{
+  width:30vw;
+  height: 3vh;
+  border-radius: 1rem;
+  border: 1px solid #d3d3d3;
+  background: white;
+}
+.searchdiv{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: -4vh;
+  border-radius: 50%;
+  border: none;
+  background: #f92d02;
+  width: 2.5vw;
+  height: 4vh;
+}
+.searchlogo{
+  width:2vh;
+  height: 2vh;
+}
+.notification{
+  margin: 0 2vw 0 0;
+  background: #d3d3d3;
+}
+.notiflogo{
+  width: 2vw;
+  height: 2vh;
+}
 .feed-container{
   display: flex;
   flex-direction: column;
