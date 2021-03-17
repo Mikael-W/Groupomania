@@ -21,7 +21,7 @@
             <input type="text" placeholder="Nom de famille" />
             <input type="email" placeholder="Email" />
             <input type="password" placeholder="Nouveau mot de passe"/>
-            <router-link><button class="signupBtn">S'incrire</button></router-link>
+            <button class="signupBtn">S'incrire</button>
           </div>
       </div>
     </teleport>
