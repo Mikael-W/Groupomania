@@ -2,12 +2,12 @@
   <div class="connexion-layout">
     <div class="rightlogintitle">
       <img src="../assets/logoheader.png" alt="groupomamia logo" />
-      <p>L'application qui rapproche les collaborateurs</p>
+      <span class="slogan">L'application qui rapproche les collaborateurs</span>
     </div>
     <div class="userlog">
       <input type="email" placeholder="email" />
       <input type="password" placeholder="Mot de passe" />
-      <router-link to="/Home" class="logbtn">Connexion</router-link>
+      <button class="logbtn"><router-link to="/Home" class="rl-color">Connexion</router-link></button>
       <span>Pas encore inscrit ?</span>
       <button @click="signupModal = true" class="signupBtn">S'incrire</button>
     </div>
@@ -59,9 +59,16 @@ export default {
 }
 .rightlogintitle {
   grid-column-start: 1;
+  display: flex;
+  flex-direction: column;
   width: 40vw;
   height: 50vh;
   margin: 5vh 0;
+}
+.slogan{
+  font-size: 1.3rem;
+  color: #042a5f;
+  margin: 1.5rem;
 }
 img {
   width: 80%;
@@ -72,7 +79,6 @@ h1 {
 }
 p{
   font-size: 1rem;
-  margin: 0 0 1rem 0;
   color: #042a5f;
 }
 .userlog {
@@ -190,5 +196,19 @@ a {
 .lname{
   width: 50%;
 }
-
+footer{
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  bottom:0;
+  width: 100vw;
+  height: 50px;
+  color:#ededed;
+  font-weight: bold;
+  background: #042a5f;
+}
+.rl-color{
+  color:white;
+}
 </style>

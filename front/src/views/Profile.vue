@@ -1,20 +1,20 @@
 <template>
-  <div class="Home">
+  <div class="Profile">
     <Homepage />
-    <Timeline />
+    <ProfilePage />
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
+import ProfilePage from '@/components/Profile.vue'
 import Homepage from '@/components/Home.vue'
-import Timeline from '@/components/Timeline.vue'
 
 export default {
-  name: 'Home',
+  name: 'Profile',
   components: {
     Homepage,
-    Timeline
+    ProfilePage
   }
 }
 </script>
