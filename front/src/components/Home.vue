@@ -12,7 +12,7 @@
         <img class="user_side-logonotif" src="../assets/notification.png" alt="">
       </div>
       <div class="user_side-profile">
-        <img class="user_profile-pict" src="../assets/photo.png" alt="">
+        <img class="user_profile-pict" src="../assets/ProfessorCDP.jpeg" alt="">
         <router-link class="user-name" to="/Profile">username</router-link>
       </div>
     </div>

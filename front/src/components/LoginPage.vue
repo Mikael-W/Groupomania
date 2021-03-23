@@ -5,7 +5,7 @@
       <span class="slogan">L'application qui rapproche les collaborateurs</span>
     </div>
     <div class="userlog">
-      <input type="email" placeholder="email" />
+      <input type="email" placeholder="Email" />
       <input type="password" placeholder="Mot de passe" />
       <button class="logbtn"><router-link to="/Home" class="rl-color">Connexion</router-link></button>
       <span>Pas encore inscrit ?</span>
@@ -25,7 +25,7 @@
             <input class="fname" type="text" placeholder="Prénom" />
             <input class="lname" type="text" placeholder="Nom de famille" />
             </div>
-            <input type="email" placeholder="Email" />
+            <input type="Email" placeholder="Email" />
             <input type="password" placeholder="Nouveau mot de passe"/>
             <router-link class="signupBtn" to="/Home">S'incrire</router-link>
             </div>
