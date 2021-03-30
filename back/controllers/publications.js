@@ -43,7 +43,7 @@ module.exports = {
         const id = req.params.id;
         const updatedPublication ={
             content: req.body.content,
-            imageUrl: req.body.imageUrl,
+            imageUrl: req.boyd.imageUrl
         }
 
         const userId = req.body.userId;

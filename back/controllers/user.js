@@ -8,14 +8,13 @@ const PASSWORD_REGEX  = /^(?=.*\d).{4,8}$/;
 
 module.exports ={
 
-  signUp: function signUp(req, res){
+  signup: function(req, res){
 
     //params
     let email    = req.body.email;
     let firstname = req.body.firstname;
     let lastname = req.body.lastname;
     let password = req.body.password;
-    let bio      = req.body.bio;
 
     if (email == null || firstname == null || lastname == null || password == null) {
       return res.status(400).json({ 'error': 'missing parameters' });
@@ -40,7 +39,8 @@ module.exports ={
                   lastname: req.body.lastname,
                   bio: req.body.bio,
                   imageUrl: req.body.imageUrl,
-                  password: hash
+                  password: hash,
+                  isAdmin: 0
                 }
               models.User.create(user)
                 .then(result =>{res.status(201).json({'message':'User created successfully'});
@@ -57,7 +57,7 @@ module.exports ={
   login: function login(req,res){
       models.User.findOne({where: {email: req.body.email}}).then(user =>{
         if(user === null){
-          res.status(401).json({'message':'invalid credetials!'});
+          res.status(401).json({'message':'invalid credentials!'});
         }else{
           bcrypt.compare(req.body.password, user.password, function(err, result){
           if(result){
@@ -78,57 +78,45 @@ module.exports ={
       res.status(500).json({'message':'something went wrong'});
     });
   },
-//    getUserProfile: function(req,res){
-//      //auth headers
-//
-//      models.User.findOne({
-//        attributes: [ 'id', 'email', 'firstname', 'lastname', 'bio' ],
-//        where: { id: userId }
-//      }).then(function(user) {
-//        if (user) {
-//          res.status(201).json(user);
-//        } else {
-//          res.status(404).json({ 'error': 'user not found' });
-//        }
-//      }).catch(function(err) {
-//        res.status(500).json({ 'error': 'cannot fetch user' });
-//      });
-//    },
-//    updateprofile: function(req,res){
-//      //auth headers
-//      //params
-//
-//      let bio = req.body.bio;
-//      let imageUrl = req.body.imageUrl
-//
-//      models.User.findOne({
-//        attributes: ['id', 'bio'],
-//        where: { id: userId }
-//      }).then(function (userFound) {
-//        done(null, userFound);
-//      })
-//      .catch(function(err) {
-//        return res.status(500).json({ 'error': 'unable to verify user' });
-//      });
-//      if(userFound) {
-//        userFound.update({
-//          bio: (bio ? bio : userFound.bio)
-//        }).then(function() {
-//          done(userFound);
-//        }).catch(function(err) {
-//          res.status(500).json({ 'error': 'cannot update user' });
-//        });
-//      } else {
-//        res.status(404).json({ 'error': 'user not found' });
-//      }
-//    },
-//   function(userFound) {
-//    if (userFound) {
-//      return res.status(201).json(userFound);
-//    } else {
-//      return res.status(500).json({ 'error': 'cannot update user profile' });
-//    }
-//    }
+   getUserProfile: function(req,res){
+      models.User.findOne({
+        attributes: [ 'id', 'email', 'firstname', 'lastname','imageUrl', 'bio', 'isAdmin' ],
+        where: { id: userId }
+      }).then(function(user) {
+        if (user) {
+          res.status(201).json(user);
+        } else {
+          res.status(404).json({ 'error': 'user not found' });
+        }
+      }).catch(function(err) {
+        res.status(500).json({ 'error': 'cannot fetch user' });
+      });
+    },
+
+
+    updateProfile : function(req,res){
+      
+
+      const updatedProfile ={
+          bio: req.body.bio,
+          imageUrl: `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` 
+      }
+
+      const userId = req.body.id;
+
+      models.User.update(updatedProfile, {where: { id :userId}})
+      .then(result => {
+          res.status(200).json({ 
+          message:"Profile updated successfully",
+          post: updatedProfile
+      });
+    }).catch(error => {
+      res.status(200).json({
+          message: "Somenthing went wrong",
+          error : error
+      });
+  })
+}
 }
 
 

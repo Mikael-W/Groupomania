@@ -2,15 +2,12 @@ const multer = require('multer')
 
 const MIME_TYPES = {
   'image/jpg': 'jpg',
-  'image/jpeg': 'jpg',
+  'image/jpeg': 'jpeg',
   'image/png': 'png'
 }
-
-//indication de l'endroit où enregistrer les fichiers entrants et sous quel nom
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
-    console.log(file)
-    callback(null, 'images')
+    callback(null, 'uploads')
   },
   filename: (req, file, callback) => {
     const name = file.originalname.split(' ').join('_')
@@ -19,4 +16,7 @@ const storage = multer.diskStorage({
   }
 })
 
-module.exports = multer({ storage: storage }).single('image')
+const multerUpload =multer({ storage }).single('image')
+
+module.exports = {
+    multerUpload : multerUpload };

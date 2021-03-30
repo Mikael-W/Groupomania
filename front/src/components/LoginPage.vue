@@ -9,7 +9,7 @@
       <input type="password" placeholder="Mot de passe" />
       <button class="logbtn"><router-link to="/Home" class="rl-color">Connexion</router-link></button>
       <span>Pas encore inscrit ?</span>
-      <button @click="signupModal = true" class="signupBtn">S'incrire</button>
+      <button @click="signupModal = true" class="signup-front-btn">S'incrire</button>
     </div>
     <teleport to="#modals">
       <div v-if="signupModal" class="Signup-modal">
@@ -22,12 +22,12 @@
             <button @click="signupModal=false" class="closemodalbtn">X</button>
             <div class="signup-form">
             <div class="names">
-            <input class="fname" type="text" placeholder="Prénom" />
-            <input class="lname" type="text" placeholder="Nom de famille" />
+            <input v-model="firstname" class="fname" type="text" placeholder="Prénom" />
+            <input v-model="lastname" class="lname" type="text" placeholder="Nom de famille" />
             </div>
-            <input type="Email" placeholder="Email" />
-            <input type="password" placeholder="Nouveau mot de passe"/>
-            <router-link class="signupBtn" to="/Home">S'incrire</router-link>
+            <input v-model="email" type="Email" placeholder="Email" />
+            <input v-model="password" type="password" placeholder="Mot de passe"/>
+            <button @click="createAccount()" class="signup-btn">S'incrire</button>
             </div>
           </div>
       </div>
@@ -42,7 +42,21 @@
 export default {
   data () {
     return{
-      signupModal:false
+      signupModal:false,
+      email:'',
+      firstname:'',
+      lastname:'',
+      password:'',
+    }
+  },
+  methods: {
+    createAccount: function(){
+      this.$store.dispatch('createAccount',{
+        email: this.email,
+        firstname: this.firstname,
+        lastname: this.lastname,
+        password:this.password
+      })
     }
   },
 }
@@ -115,7 +129,7 @@ input {
   color: white;
   font-weight: bold;
 }
-.signupBtn {
+.signup-btn, .signup-front-btn {
   display: flex;
   justify-content: center;
   align-items: center;

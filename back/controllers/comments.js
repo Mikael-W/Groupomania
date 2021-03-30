@@ -22,32 +22,21 @@ module.exports = {
     },
     getOneComment : function(req, res){
         const id = req.params.id;
-        models.Comment.findByPk(req.params.publicationId).then(post => {
-            if(post === null){
-                res.status(404).json({
-                    message: "Post not found"
-                });
+        const publicationId = req.params.id;
+        models.Comment.findOne({where: {publicationId: publicationId, id : id}}).then(result => {
+            if(result){
+                res.status(200).json(result);
             }else{
-                models.Comment.create(comment).then(result => {
-                    res.status(201).json({
-                        message: "Comment created successfully",
-                        comment: result
-                    });
-                }).catch(error => {
-                    res.status(500).json({
-                        message: "Something went wrong",
-                        error: error
-                    });
-                });
+                res.status(404).json({
+                    message: "Comment not found!"
+                })
             }
-        }).catch(err => {
+        }).catch(error => {
             res.status(500).json({
-                message: "Something went wrong",
-                error: err
-            });
+                message: "Something went wrong!"
+            })
         });
     },
-
     getAllComment: function(req, res){
         models.Comment.findAll().then(result => {
             res.status(200).json(result);
@@ -63,7 +52,7 @@ module.exports = {
         }
 
         const publicationId = req.params.publicationId;
-        const userId = req.params.userId;
+        const userId = req.body.userId;
 
         models.Comment.update(updatedComment, {where: {id : id, publicationId :publicationId, userId: userId}})
         .then(result => {
@@ -74,13 +63,12 @@ module.exports = {
     }).catch(error => {
         res.status(200).json({
             message: "Somenthing went wrong",
-            error: result
         });
     })
     },
     destroyComment: function(req, res){
         const id = req.params.id; 
-        const userId = req.params.userId;
+        const userId = req.body.userId;
         const publicationId = req.params.publicationId;
 
         models.Comment.destroy({where: {id: id, userId: userId, publicationId: publicationId}})
