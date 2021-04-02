@@ -2,7 +2,7 @@ const models = require('../models');
 const bcrypt = require('bcrypt');
 const jwt    = require('jsonwebtoken');
 const EMAIL_REGEX     = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-const PASSWORD_REGEX  = /^(?=.*\d).{4,8}$/;
+const PASSWORD_REGEX  = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{4,8}$/;
 
 
 
@@ -70,7 +70,7 @@ module.exports ={
             });
           });   
         }else{
-          res.status(401).json({'message':'invalid credetials!'});
+          res.status(401).json({'message':'invalid credentials!'});
         }
      });
     }
@@ -79,13 +79,13 @@ module.exports ={
     });
   },
    getUserProfile: function(req,res){
-      models.User.findOne({
-        attributes: [ 'id', 'email', 'firstname', 'lastname','imageUrl', 'bio', 'isAdmin' ],
-        where: { id: userId }
-      }).then(function(user) {
+    const userId = req.params.id;
+    models.User.findOne({id: userId})
+      .then(function(user) {
         if (user) {
           res.status(201).json(user);
         } else {
+          console.log(userId);
           res.status(404).json({ 'error': 'user not found' });
         }
       }).catch(function(err) {
@@ -95,29 +95,22 @@ module.exports ={
 
 
     updateProfile : function(req,res){
-      
-
-      const updatedProfile ={
+    
+      const updatedProfile = req.file
+      ? {
+          ...JSON.parse(req.body.user),
           bio: req.body.bio,
-          imageUrl: `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` 
-      }
+          imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        }
+      : { ...req.body }
 
-      const userId = req.body.id;
+      console.log(updatedProfile)
+        const id = req.params.id
 
-      models.User.update(updatedProfile, {where: { id :userId}})
-      .then(result => {
-          res.status(200).json({ 
-          message:"Profile updated successfully",
-          post: updatedProfile
-      });
-    }).catch(error => {
-      res.status(200).json({
-          message: "Somenthing went wrong",
-          error : error
-      });
-  })
+      req.User.update(updatedProfile, {where: {id: id}}).then(user => res.status(200).json({ user }))
+  } 
 }
-}
+
 
 
  

@@ -13,12 +13,42 @@
       </div>
       <div class="user_side-profile">
         <img class="user_profile-pict" src="../assets/ProfessorCDP.jpeg" alt="">
-        <router-link class="user-name" to="/Profile">username</router-link>
+        <router-link class="user-name" to="/Profile"></router-link>
+        <button @click="logout()">Deconnexion</button>
       </div>
     </div>
   </header>
 </div>
 </template>
+
+<script>
+import { mapState } from 'vuex'
+
+export default {
+  name: 'Home',
+  components: {
+  },
+  mounted: function () {
+    if (this.$store.state.user.userId == -1) {
+      this.$router.push('/');
+      return ;
+    }
+    this.$store.dispatch('getUserInfos');
+  },
+  computed: {
+    ...mapState({
+      user: 'userInfos',
+    })
+  },
+  methods: {
+    logout: function () {
+      this.$store.commit('logout');
+      this.$router.push('/');
+    }
+  }
+}
+
+</script>
 
 
 <style scoped>

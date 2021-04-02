@@ -20,7 +20,8 @@ const routes = [
   {
     path: '/Profile',
     name: 'Profile',
-    component: () => import('../views/Profile.vue')
+    component: () => import('../views/Profile.vue'),
+    props: true,
   }
 ]
 
