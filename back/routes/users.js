@@ -3,12 +3,12 @@ const router = express.Router()
 
 const userCtrl = require('../controllers/user');
 const auth     = require('../middleware/auth');
-const multer= require('../middleware/multer-config')
+const imgUploader = require('../helpers/image-uploader');
 
 // Users routes
 router.post('/signup', userCtrl.signup);
 router.post('/login', userCtrl.login);
-router.post('/infos', userCtrl.getUserProfile);
-router.patch('/edit', auth, multer, userCtrl.updateProfile);
+router.get('/:id',auth, userCtrl.getUserProfile);
+router.put('/:id', auth,imgUploader.upload.single('image'), userCtrl.editUserProfile);
 
 module.exports = router

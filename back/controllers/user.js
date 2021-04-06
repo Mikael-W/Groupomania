@@ -78,38 +78,48 @@ module.exports ={
       res.status(500).json({'message':'something went wrong'});
     });
   },
+  getAllUsers: function(req, res){
+    models.User.findAll().then(result => {
+        res.status(200).json(result);
+    }) .catch(error => {
+        res.status(500).json({
+            message: 'Something went wrong'});
+    });
+  },
    getUserProfile: function(req,res){
-    const userId = req.params.id;
-    models.User.findOne({id: userId})
+    const userId = req.params.id
+    models.User.findOne({where:{id: userId}})
       .then(function(user) {
         if (user) {
           res.status(201).json(user);
         } else {
-          console.log(userId);
           res.status(404).json({ 'error': 'user not found' });
         }
       }).catch(function(err) {
         res.status(500).json({ 'error': 'cannot fetch user' });
       });
     },
-
-
-    updateProfile : function(req,res){
-    
-      const updatedProfile = req.file
-      ? {
-          ...JSON.parse(req.body.user),
-          bio: req.body.bio,
-          imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    editUserProfile : function(req,res){
+        const userId = req.params.id;
+        const updatedProfile = {
+            bio: req.body.bio,
+            imageUrl: req.file.filename
         }
-      : { ...req.body }
 
-      console.log(updatedProfile)
-        const id = req.params.id
-
-      req.User.update(updatedProfile, {where: {id: id}}).then(user => res.status(200).json({ user }))
-  } 
+        models.User.update(updatedProfile, {where: {id:userId}})
+        .then(result => {
+            res.status(200).json({
+            message:"Profil updated successfully",
+            post: updatedProfile
+        });
+    }).catch(error => {
+        res.status(200).json({
+            message: "Somenthing went wrong",
+            error: result
+        });
+    })
 }
+};
 
 
 
