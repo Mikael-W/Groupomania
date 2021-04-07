@@ -6,12 +6,12 @@
         <div class="user_profile-pictures">
           <img class="user-bg" src="../assets/photo.png" alt="" />
           <div class="user-picture">
-          <img class="user-img" src="../assets/photoW.png" alt="" />
+          <img class="user-img" :src="user.imageUrl" />
           </div>
         </div>
     </div>
     <div class="profile-data">
-        <span class="user-name">{{user.firstname}}</span>
+        <span class="user-name"> {{user.firstname}} {{user.lastname}} </span>
         <div class="user_profile-bio">
           <p class="bio-text">{{user.bio}}</p>
         </div>
@@ -32,16 +32,15 @@ export default {
     Homepage,
   },
   mounted: function () {
-    console.log(this.$store.state.user);
     if (this.$store.state.user.userId == -1) {
-      this.$router.push('/');
+     this.$router.push('/');
       return ;
     }
     this.$store.dispatch('getUserInfos');
   },
   computed: {
     ...mapState({
-      user: 'userInfos',
+      user: 'user', 
     })
   },
   methods: {

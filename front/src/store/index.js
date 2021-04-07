@@ -28,6 +28,7 @@ const store =  createStore({
     status: '',
     user: user,
     userInfos: {
+      id:'',
       firstname:'',
       lastname:'',
       email:'',
@@ -43,8 +44,8 @@ const store =  createStore({
       localStorage.setItem('user', JSON.stringify(user));
       state.user = user;
     },
-    userInfos: function (state, userInfos){
-      state.userInfos = userInfos;
+    userInfos: function (state,userInfos){
+      state.user = userInfos;
     },
     logout: function (state){
       state.user = {
@@ -84,8 +85,8 @@ const store =  createStore({
       });
     });
   },
-    getUserInfos: ({commit}) => {
-    instance.get('users/')
+    getUserInfos: ({state, commit}) => {
+    instance.post('users/' + state.user.user)
       .then(function (response){
         console.log(response.data);
         commit('userInfos', response.data);

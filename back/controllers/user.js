@@ -1,6 +1,8 @@
 const models = require('../models');
 const bcrypt = require('bcrypt');
 const jwt    = require('jsonwebtoken');
+const { response } = require('express');
+
 const EMAIL_REGEX     = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const PASSWORD_REGEX  = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{4,8}$/;
 
@@ -65,8 +67,8 @@ module.exports ={
               email: user.email,
               userId: user.id
           }, process.env.JWT_KEY, function(err, token){
-            res.status(200).json({'message':'Authentification successful',
-            token: token
+            res.status(200).json({'user':user.id,
+            'token': token
             });
           });   
         }else{
@@ -79,16 +81,17 @@ module.exports ={
     });
   },
   getAllUsers: function(req, res){
-    models.User.findAll().then(result => {
-        res.status(200).json(result);
+    models.User.findAll()
+      .then(users => {
+        res.status(200).json(users);
     }) .catch(error => {
         res.status(500).json({
             message: 'Something went wrong'});
     });
   },
-   getUserProfile: function(req,res){
+  getUserProfile: function(req,res){
     const userId = req.params.id
-    models.User.findOne({where:{id: userId}})
+    models.User.findByPk(userId)
       .then(function(user) {
         if (user) {
           res.status(201).json(user);
@@ -99,7 +102,7 @@ module.exports ={
         res.status(500).json({ 'error': 'cannot fetch user' });
       });
     },
-    editUserProfile : function(req,res){
+  editUserProfile : function(req,res){
         const userId = req.params.id;
         const updatedProfile = {
             bio: req.body.bio,
