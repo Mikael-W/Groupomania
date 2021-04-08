@@ -40,7 +40,8 @@ module.exports ={
                   firstname: req.body.firstname,
                   lastname: req.body.lastname,
                   bio: req.body.bio,
-                  imageUrl: req.body.imageUrl,
+                  imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+                  bgUrl:`${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
                   password: hash,
                   isAdmin: 0
                 }
@@ -106,7 +107,7 @@ module.exports ={
         const userId = req.params.id;
         const updatedProfile = {
             bio: req.body.bio,
-            imageUrl: req.file.filename
+            imageUrl:`${req.protocol}://${req.get('host')}/images/${req.file.filename}`
         }
 
         models.User.update(updatedProfile, {where: {id:userId}})
@@ -121,7 +122,26 @@ module.exports ={
             error: result
         });
     })
-}
+},
+  editUserOverlay : function(req,res){
+    const userId = req.params.id;
+    const updatedProfile = {
+        bgUrl:`${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    }
+  
+    models.User.update(updatedProfile, {where: {id:userId}})
+    .then(result => {
+        res.status(200).json({
+        message:"Overlay updated successfully",
+        post: updatedProfile
+    });
+  }).catch(error => {
+    res.status(200).json({
+        message: "Somenthing went wrong",
+        error: result
+    });
+  })
+  }
 };
 
 
