@@ -38,13 +38,13 @@ name: 'Timeline',
   },
   mounted: function () {
     this.$store.dispatch('getPublications');
-    this.$store.dispatch('getComments');
+    //this.$store.dispatch('getComments');
   },
   computed: {
     ...mapState({
       user: 'user',
       publications: 'publications',
-      comments: 'comments'
+     // comments: 'comments'
     })
   },
   methods: {

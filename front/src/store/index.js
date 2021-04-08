@@ -37,7 +37,8 @@ const store =  createStore({
     publications:{
       id:'',
       userId:'',
-      content:''
+      content:'',
+      imageUrl:''
     },
     comments:{
       id:'',
@@ -120,16 +121,30 @@ const store =  createStore({
           console.log(response);
         });
     },
-    getComments: ({state, commit}) => {
-      instance.get('publications/'+ state.publications.id +'comments/')
+    createPublication: ({commit}, Publications) => {
+      return new Promise((resolve, reject)=>{
+        commit;
+        instance.post('publications', Publications)
         .then(function (response){
-          console.log(response.data);
-          commit('comments', response.data);
+          commit('publications', 'created');
+          resolve(response);
         })
-        .catch(function(response){
-          console.log(response);
+        .catch(function(error){
+          commit('publications', 'error_create');
+          reject(error);
         });
-    },
+      });
+    }
+   //getComments: ({state, commit}) => {
+   //  instance.get('publications/'+ state.publications.id +'comments/')
+   //    .then(function (response){
+   //      console.log(response.data);
+   //      commit('comments', response.data);
+   //    })
+   //    .catch(function(response){
+   //      console.log(response);
+   //    });
+   //},
 
   }
 })

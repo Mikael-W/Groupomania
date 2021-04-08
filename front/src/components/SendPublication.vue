@@ -1,12 +1,34 @@
 <template>
+    <div class="SP-layout">
     <div class="publicationbox-layout">
         <div class="user_publication-container">
             <div class="user_pict-link">
             <img class="user_profile-picture" :src="user.imageUrl"  alt="">
-            <div class="postlink-container" role="button">Que voulez vous dire, {{user.firstname}} ?</div>
+            <div @click="publishModal = true" class="postlink-container" role="button">Que voulez vous dire, {{user.firstname}} ?</div>
+            </div>
         </div>
     </div>
-  </div>
+    <teleport to="#modals">
+      <div v-if="publishModal" class="Signup-modal">
+        <div class="overlay"></div>
+          <div class="userSignup">
+              <div class="user_pict-link">
+            <img class="user_profile-picture" :src="user.imageUrl"  alt="">
+            <div> {{user.firstname}} {{user.lastname}}</div>
+            </div>
+            <button @click="publishModal=false" class="closemodalbtn">X</button>
+            <div class="signup-form">
+            <textarea v-model="content" class="text-content" type="text-area" placeholder="Que voulez vous dire?" />
+            <img class="publish-picture" src="../assets/photo.png" alt="">
+            <div class="action-container_btn">
+            <button @click="upload()" class="upload-btn">upload<img class="upload-icon" src="../assets/image-gallery.png" alt=""></button>
+            <button @click="createPublication()" class="publish-btn">Publier<img class="publish-icon" src="../assets/send.png" alt=""></button>
+            </div>
+            </div>
+          </div>
+      </div>
+    </teleport>
+    </div>
 </template>
 
 <script>
@@ -14,7 +36,12 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'SendPublication',
-  components: {
+  data(){
+      return{
+      publishModal:false,
+      content:'',
+      imageUrl:'',
+    }
   },
   computed: {
     ...mapState({
@@ -32,6 +59,34 @@ export default {
     width: 100vw;
     display: flex;
     justify-content: center;
+}
+.text-content{
+    width: 95%;
+    min-height: 5vh;
+    border: none;
+    resize: vertical;
+    outline: unset;
+}
+.publish-picture{
+    width:95%;
+    height: 50vh;
+}
+.action-container_btn{
+    display: flex;
+}
+.upload-btn, .publish-btn{
+    display: flex;
+    align-items: center;
+    background: white;
+    justify-content: center;
+    width:25vw;
+    border-width: 1px;
+    border-color: grey;
+    border-style: solid;
+    padding: 10px 0;
+}
+.upload-icon, .publish-icon{
+    width: 2.5vw;
 }
 </style>>
 

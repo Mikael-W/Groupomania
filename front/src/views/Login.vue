@@ -96,7 +96,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .connexion-layout {
   display: grid;
   align-content: center;

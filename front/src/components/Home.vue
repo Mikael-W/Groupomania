@@ -11,10 +11,12 @@
         <span class="notif-count">0</span>
         <img class="user_side-logonotif" src="../assets/notification.png" alt="">
       </div>
-      <div class="user_side-profile">
+      <div class="user-side_profile">
+        <div class="user-profile_container">
+         <router-link class="user-name" to="/Profile">{{user.firstname}}</router-link>
         <img class="user_profile-pict" :src="user.imageUrl" alt="">
-        <router-link class="user-name" to="/Profile">{{user.firstname}}</router-link>
-        <button class="logout-Btn" @click="logout()">Deconnexion</button>
+        </div>
+        <button class="logout-Btn" @click="logout()"><img class="sign-out_icon" src="../assets/log-out.png" alt=""></button>
       </div>
     </div>
 </header>
@@ -56,6 +58,9 @@ header{
   justify-items: center;
   width: 100vw;
   background: #042a5f;
+}
+a{
+  text-decoration: none;
 }
 .logo{
   padding: 1rem;
@@ -119,14 +124,33 @@ input{
   border-radius:50%;
   margin-left: 1.5rem;
 }
-.user_side-profile{
+.user-side_profile{
+  display: flex;
+  align-items: center;
+}
+.user-profile_container{
+  border-radius: 25px;
+  background: white;
+  border: 1px solid white;
+  padding: 0;;
   display: flex;
   align-items: center;
 }
 .user-name{
-  color: white;
+  color: #042a5f;
   font-size: 1.2rem;
   margin: 0 0 0 10px;
+}
+.sign-out_icon{
+  width: 3vw;
+  margin-left:10px;
+}
+.logout-Btn{
+  display: flex;
+  align-items: center;
+  background: none;
+  border:none;
+  cursor: pointer;
 }
 .user_profile-pict{
   background: white;
@@ -134,6 +158,7 @@ input{
   height:2.5rem;
   border-radius: 50%;
   border: 2px solid white;
+  margin: 0;
 }
 .user_publication-container{
   display: flex;
