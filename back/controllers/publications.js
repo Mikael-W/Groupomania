@@ -6,7 +6,7 @@ module.exports = {
     const publication = {
         userId: req.body.userId,
         content: req.body.content,
-        imageUrl: req.file.filename,
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
         likes:0
     }
     models.Publication.create(publication).then(result => {

@@ -1,8 +1,8 @@
 <template>
 <div class="layout">
-  <header>
+<header>
       <div class="search-wrapper">
-      <input class="search-input" type="text" v-model="search" placeholder="Rechercher des collègues"/>
+      <input class="search-input" type="text" placeholder="Rechercher des collègues"/>
       <img class="searchlogo" src="../assets/search.png" alt="">
     </div>
     <router-link to="/Home"><img class="logo" alt="Groupomania logo" src="../assets/logoheader.png"></router-link>
@@ -12,12 +12,12 @@
         <img class="user_side-logonotif" src="../assets/notification.png" alt="">
       </div>
       <div class="user_side-profile">
-        <img class="user_profile-pict" src="../assets/ProfessorCDP.jpeg" alt="">
-        <router-link class="user-name" to="/Profile"></router-link>
-        <button @click="logout()">Deconnexion</button>
+        <img class="user_profile-pict" :src="user.imageUrl" alt="">
+        <router-link class="user-name" to="/Profile">{{user.firstname}}</router-link>
+        <button class="logout-Btn" @click="logout()">Deconnexion</button>
       </div>
     </div>
-  </header>
+</header>
 </div>
 </template>
 
@@ -29,15 +29,12 @@ export default {
   components: {
   },
   mounted: function () {
-    if (this.$store.state.user.userId == -1) {
-      this.$router.push('/');
-      return ;
-    }
+
     this.$store.dispatch('getUserInfos');
   },
   computed: {
     ...mapState({
-      user: 'userInfos',
+      user: 'user',
     })
   },
   methods: {
@@ -51,7 +48,7 @@ export default {
 </script>
 
 
-<style scoped>
+<style>
 header{
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -137,5 +134,34 @@ input{
   height:2.5rem;
   border-radius: 50%;
   border: 2px solid white;
+}
+.user_publication-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width:50%;
+  background: white;
+  margin: 1rem;
+  border-radius:6px;
+}
+.user_pict-link{
+  display: flex;
+  align-items: center;
+}
+.user_profile-picture{
+  width:40px;
+  height:40px;
+  border:1px solid black;
+  margin: 1rem;
+  border-radius:50%;
+  background: white;
+}
+.postlink-container{
+  display:flex;
+  align-items: center;
+  width:85%;
+  height: 40px;
+  border-radius: 1rem;
+  background: #d3d3d3;
 }
 </style>

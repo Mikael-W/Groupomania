@@ -33,6 +33,16 @@ const store =  createStore({
       lastname:'',
       email:'',
       imageUrl: ''
+    },
+    publications:{
+      id:'',
+      userId:'',
+      content:''
+    },
+    comments:{
+      id:'',
+      userId:'',
+      content:''
     }
   },
   mutations: {
@@ -46,6 +56,12 @@ const store =  createStore({
     },
     userInfos: function (state,userInfos){
       state.user = userInfos;
+    },
+    publications: function(state, publications){
+      state.publications = publications;
+    },
+    comments: function(state, comments){
+      state.comments = comments;
     },
     logout: function (state){
       state.user = {
@@ -88,13 +104,33 @@ const store =  createStore({
     getUserInfos: ({state, commit}) => {
     instance.post('users/' + state.user.user)
       .then(function (response){
-        console.log(response.data);
         commit('userInfos', response.data);
       })
       .catch(function(error){
         console.log(error);
       });
-    }
+    },
+    getPublications: ({commit}) => {
+      instance.get('publications/all')
+        .then(function (response){
+          console.log(response.data);
+          commit('publications', response.data);
+        })
+        .catch(function(response){
+          console.log(response);
+        });
+    },
+    getComments: ({state, commit}) => {
+      instance.get('publications/'+ state.publications.id +'comments/')
+        .then(function (response){
+          console.log(response.data);
+          commit('comments', response.data);
+        })
+        .catch(function(response){
+          console.log(response);
+        });
+    },
+
   }
 })
 export default store;

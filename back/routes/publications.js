@@ -8,8 +8,8 @@ const imgUploader = require('../helpers/image-uploader');
 
 // Publications routes
 router.post('/',auth, imgUploader.upload.single('image'), publicationsCtrl.createPublication);
-router.get('/', auth, publicationsCtrl.getAllPublication);
-router.get('/:id', auth, publicationsCtrl.getOnePublication);
+router.get('/all', publicationsCtrl.getAllPublication);
+router.get('/:id', publicationsCtrl.getOnePublication);
 router.patch('/:id', auth, imgUploader.upload.single('image'), publicationsCtrl.updatePublication);
 router.delete('/:id', auth, publicationsCtrl.destroyPublication);
 

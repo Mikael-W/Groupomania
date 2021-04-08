@@ -1,12 +1,15 @@
 <template>
   <div class="timeline-container">
   <div class="publication-container">
-    <div class="user_publication-container">
-      <div class="user_pict-link">
-      <img class="user_profile-picture" src="../assets/photo.png" alt="">
-      <div class="postlink-container" role="button">Que voulez vous dire, username</div>
-      </div>
-      <div class="interaction-container">
+    <div v-for="publication in publications" :key="publication.id" class="publication-card">
+        <div class="profile-publication">
+          <img class="profile-User" :src="publication.userId" alt="">
+          <p class="publication-text">{{publication.createdAt}}</p>
+        </div>
+        <div class="publication-content">
+          <p>{{publication.content}}</p>
+          <img :src="publication.imageUrl" alt="">
+        </div>
         <div class="interactions-count">
         <div class="likes-count">
           <img class="like" src="../assets/like.png" alt="">
@@ -21,66 +24,57 @@
           <span>partages</span>
         </div>
         </div>
+        </div>
       </div>
     </div>
-  </div>
-  <teleport to="#modals">
-      <div v-if="signupModal" class="Signup-modal">
-        <div class="overlay"></div>
-          <div class="userSignup">
-            <div class="signup-title">
-            <h1>S'inscrire</h1>
-            <p>C'est facile et rapide !</p>
-            </div>
-            <button @click="signupModal=false" class="closemodalbtn">X</button>
-          </div>
-      </div>
-   </teleport>
-</div>
 </template>
 
 <script>
-export default {
+import { mapState } from 'vuex'
 
+export default {
+name: 'Timeline',
+  components: {
+  },
+  mounted: function () {
+    this.$store.dispatch('getPublications');
+    this.$store.dispatch('getComments');
+  },
+  computed: {
+    ...mapState({
+      user: 'user',
+      publications: 'publications',
+      comments: 'comments'
+    })
+  },
+  methods: {
+  }
 }
 </script>
 
-<style>
+<style scoped>
+
+.timeline-container{
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+}
 .publication-container{
   display: flex;
-  justify-content: center;
-  width:100%;
-  height:100%;
-}
-.user_publication-container{
-  display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  width:100%;
+}
+.publication-card{
   width:50%;
   background: white;
-  margin: 1rem;
-  border-radius:6px;
+  margin: 1rem 0;
+  border-radius: 6px ;
+
+
 }
-.user_pict-link{
-  display: flex;
-  align-items: center;
-}
-.user_profile-picture{
-  width:40px;
-  height:40px;
-  border:1px solid black;
-  margin: 1rem;
-  border-radius:50%;
-  background: white;
-}
-.postlink-container{
-  display:flex;
-  align-items: center;
-  width:85%;
-  height: 40px;
-  border-radius: 1rem;
-  background: #d3d3d3;
-}
+
 .interactions-count{
   display:flex;
   justify-content: space-around;
