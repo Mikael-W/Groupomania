@@ -33,38 +33,30 @@ const store =  createStore({
       lastname:'',
       email:'',
       imageUrl: ''
-    },
-    publications:{
-      id:'',
-      userId:'',
-      content:'',
-      imageUrl:''
-    },
-    comments:{
-      id:'',
-      userId:'',
-      content:''
     }
   },
   mutations: {
-    setStatus: function(state, status){
+    SET_STATUS: function(state, status){
       state.status = status;
     },
-    logUser: function(state, user){
+    LOG_USER: function(state, user){
       instance.defaults.headers.common['Authorization'] = user.token;
       localStorage.setItem('user', JSON.stringify(user));
       state.user = user;
     },
-    userInfos: function (state,userInfos){
+    USER_INFOS: function (state,userInfos){
       state.user = userInfos;
     },
-    publications: function(state, publications){
+    PUBLICATIONS_LIST: function(state, publications){
       state.publications = publications;
     },
-    comments: function(state, comments){
+    ADD_PUBLICATION: function(state,newPublication){
+      state.publications.unshift(newPublication);
+    },
+    COMMENTS_LIST: function(state, comments){
       state.comments = comments;
     },
-    logout: function (state){
+    LOG_OUT: function (state){
       state.user = {
         userId: -1,
         token:'',
@@ -74,16 +66,16 @@ const store =  createStore({
   },
   actions: {
     login: ({commit}, userInfos) =>{
-      commit('setStatus', 'loading');
+      commit('SET_STATUS', 'loading');
       return new Promise((resolve, reject)=>{
       instance.post('users/login', userInfos)
       .then(function (response){
-        commit('setStatus', '');
-        commit('logUser', response.data);
+        commit('SET_STATUS', '');
+        commit('LOG_USER', response.data);
         resolve(response);
       })
       .catch(function(error){
-        commit('setStatus', 'error_login');
+        commit('SET_STATUS', 'error_login');
         reject(error);
       });
     });
@@ -93,11 +85,11 @@ const store =  createStore({
       commit;
       instance.post('users/signup', userInfos)
       .then(function (response){
-        commit('setStatus', 'created');
+        commit('SET_STATUS', 'created');
         resolve(response);
       })
       .catch(function(error){
-        commit('setStatus', 'error_create');
+        commit('SET_STATUS', 'error_create');
         reject(error);
       });
     });
@@ -105,7 +97,8 @@ const store =  createStore({
     getUserInfos: ({state, commit}) => {
     instance.post('users/' + state.user.user)
       .then(function (response){
-        commit('userInfos', response.data);
+        console.log(response);
+        commit('USER_INFOS', response.data);
       })
       .catch(function(error){
         console.log(error);
@@ -114,38 +107,18 @@ const store =  createStore({
     getPublications: ({commit}) => {
       instance.get('publications/all')
         .then(function (response){
-          console.log(response.data);
-          commit('publications', response.data);
+          commit('PUBLICATIONS_LIST', response.data);
         })
         .catch(function(response){
           console.log(response);
         });
     },
-    createPublication: ({commit}, Publications) => {
-      return new Promise((resolve, reject)=>{
-        commit;
-        instance.post('publications', Publications)
-        .then(function (response){
-          commit('publications', 'created');
-          resolve(response);
+    addPublication ({ commit }, publicationBody) {
+      instance.post('publications/add',publicationBody)
+        .then(response => {
+          commit('ADD_PUBLICATION', response.post)
         })
-        .catch(function(error){
-          commit('publications', 'error_create');
-          reject(error);
-        });
-      });
     }
-   //getComments: ({state, commit}) => {
-   //  instance.get('publications/'+ state.publications.id +'comments/')
-   //    .then(function (response){
-   //      console.log(response.data);
-   //      commit('comments', response.data);
-   //    })
-   //    .catch(function(response){
-   //      console.log(response);
-   //    });
-   //},
-
   }
 })
 export default store;

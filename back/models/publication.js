@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Publication.belongsTo(models.User)
+      Publication.belongsTo(models.User, {foreignKey:'userId'})
       Publication.hasMany(models.Comment)
     }
   };

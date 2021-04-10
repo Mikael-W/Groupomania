@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Homepage />
+    <Header />
     <div class="profile-pictures">
       <div class="user_profile">
         <div class="user_profile-pictures">
@@ -22,14 +22,14 @@
 </template>
 
 <script>
-import Homepage from '@/components/Home.vue'
+import Header from '@/components/HomeHeader.vue'
 
 import { mapState } from 'vuex'
 
 export default {
   name: 'Profile',
   components: {
-    Homepage,
+    Header,
   },
   mounted: function () {
     if (this.$store.state.user.userId == -1) {
@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     logout: function () {
-      this.$store.commit('logout');
+      this.$store.commit('LOG_OUT');
       this.$router.push('/');
     }
   }

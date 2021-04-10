@@ -4,13 +4,14 @@ const router = express.Router()
 const publicationsCtrl = require('../controllers/publications')
 const commentsCtrl     = require('../controllers/comments')
 const auth             = require('../middleware/auth')
-const imgUploader = require('../helpers/image-uploader');
+const multer = require('../helpers/image-uploader');
+
 
 // Publications routes
-router.post('/',auth, imgUploader.upload.single('image'), publicationsCtrl.createPublication);
+router.post('/add', multer.uploadImage, publicationsCtrl.createPublication);
 router.get('/all', publicationsCtrl.getAllPublication);
 router.get('/:id', publicationsCtrl.getOnePublication);
-router.patch('/:id', auth, imgUploader.upload.single('image'), publicationsCtrl.updatePublication);
+router.patch('/:id', auth, multer.uploadImage, publicationsCtrl.updatePublication);
 router.delete('/:id', auth, publicationsCtrl.destroyPublication);
 
 router.post('/:publicationId/comments', commentsCtrl.createComment);

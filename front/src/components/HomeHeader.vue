@@ -27,11 +27,10 @@
 import { mapState } from 'vuex'
 
 export default {
-  name: 'Home',
+  name: 'Header',
   components: {
   },
   mounted: function () {
-
     this.$store.dispatch('getUserInfos');
   },
   computed: {
@@ -41,7 +40,7 @@ export default {
   },
   methods: {
     logout: function () {
-      this.$store.commit('logout');
+      this.$store.commit('LOG_OUT');
       this.$router.push('/');
     }
   }

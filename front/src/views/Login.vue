@@ -147,7 +147,6 @@ input {
   border: 1px solid #d3d3d3;
   background: white;
   text-indent: 10px;
-  outline-color: transparent;
 }
 .logbtn {
   display: flex;

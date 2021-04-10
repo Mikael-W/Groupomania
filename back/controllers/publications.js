@@ -4,10 +4,9 @@ module.exports = {
 
     createPublication : function(req, res){
     const publication = {
-        userId: req.body.userId,
+        userId:req.body.id,
         content: req.body.content,
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
-        likes:0
+        imageUrl: req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null
     }
     models.Publication.create(publication).then(result => {
         res.status(201).json({

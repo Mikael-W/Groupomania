@@ -19,10 +19,11 @@
             <button @click="publishModal=false" class="closemodalbtn">X</button>
             <div class="signup-form">
             <textarea v-model="content" class="text-content" type="text-area" placeholder="Que voulez vous dire?" />
-            <img class="publish-picture" src="../assets/photo.png" alt="">
+            <div class="file-preview"><img class="file-preview_image" v-if="url" :src="url" alt=""></div>
             <div class="action-container_btn">
-            <button @click="upload()" class="upload-btn">upload<img class="upload-icon" src="../assets/image-gallery.png" alt=""></button>
-            <button @click="createPublication()" class="publish-btn">Publier<img class="publish-icon" src="../assets/send.png" alt=""></button>
+            <button @click="onPickFile" class="upload-btn">upload<img class="upload-icon" src="../assets/image-gallery.png" alt=""></button>
+            <input class="file-upload_bnt" type="file" ref="fileInput" accept="image/*" @change="onFilePicked"/>
+            <button @click="addPublication()" class="publish-btn">Publier<img class="publish-icon" src="../assets/send.png" alt=""></button>
             </div>
             </div>
           </div>
@@ -39,17 +40,40 @@ export default {
   data(){
       return{
       publishModal:false,
-      content:'',
-      imageUrl:'',
-    }
-  },
+        content:'',
+        image :null,
+        url:null
+      }
+    },
   computed: {
     ...mapState({
       user: 'user',
+      publications: 'publications'
     })
   },
   methods: {
-  }
+    onPickFile () {
+      this.$refs.fileInput.click()
+    },
+    onFilePicked (event) {
+      const files = event.target.files[0];
+      this.image = files.name
+      this.url = URL.createObjectURL(files);
+    },
+     addPublication(){
+         this.$store.dispatch('addPublication',{
+             id:this.user.id,
+             content: this.content,
+             image:this.image
+         })
+         .then(function (){
+             console.log(this.image)
+            console.log('publié')
+        },function(error){
+        console.log (error);
+        }) 
+    }
+  } 
 }
 
 </script>
@@ -67,9 +91,12 @@ export default {
     resize: vertical;
     outline: unset;
 }
-.publish-picture{
+.file-preview{
     width:95%;
-    height: 50vh;
+    height: auto;
+}
+.file-preview_image{
+    width:100%;
 }
 .action-container_btn{
     display: flex;
@@ -84,6 +111,9 @@ export default {
     border-color: grey;
     border-style: solid;
     padding: 10px 0;
+}
+.file-upload_bnt{
+    display:none;
 }
 .upload-icon, .publish-icon{
     width: 2.5vw;

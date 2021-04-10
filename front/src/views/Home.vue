@@ -1,6 +1,6 @@
 <template>
   <div class="Home">
-    <Homepage />
+    <Header />
     <SendPublication />
     <Timeline />
   </div>
@@ -8,16 +8,22 @@
 
 <script>
 // @ is an alias to /src
-import Homepage from '@/components/Home.vue'
+import Header from '@/components/HomeHeader.vue'
 import Timeline from '@/components/Timeline.vue'
 import SendPublication from '@/components/SendPublication.vue'
 
 export default {
   name: 'Home',
   components: {
-    Homepage,
+    Header,
     SendPublication,
     Timeline
+  },
+  mounted: function () {
+    if (this.$store.state.user.userId == -1) {
+     this.$router.push('/');
+      return ;
+    }
   }
 }
 </script>

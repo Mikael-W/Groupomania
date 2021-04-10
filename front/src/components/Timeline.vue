@@ -1,14 +1,14 @@
 <template>
   <div class="timeline-container">
   <div class="publication-container">
-    <div v-for="publication in publications" :key="publication.id" class="publication-card">
+    <div v-for="publication in publications" :key="publication" class="publication-card">
         <div class="profile-publication">
-          <img class="profile-User" :src="publication.userId" alt="">
-          <p class="publication-text">{{publication.createdAt}}</p>
+          <img class="user_profile-picture" src="../assets/photo.png" alt="">
+          <p class="publication-text">date de creation </p>
         </div>
         <div class="publication-content">
           <p>{{publication.content}}</p>
-          <img :src="publication.imageUrl" alt="">
+          <img class="timeline-picture" :src="publication.imageUrl" alt="">
         </div>
         <div class="interactions-count">
         <div class="likes-count">
@@ -37,7 +37,7 @@ name: 'Timeline',
   components: {
   },
   mounted: function () {
-    this.$store.dispatch('getPublications');
+   this.$store.dispatch('getPublications','getUserInfos');
     //this.$store.dispatch('getComments');
   },
   computed: {
@@ -71,10 +71,13 @@ name: 'Timeline',
   background: white;
   margin: 1rem 0;
   border-radius: 6px ;
-
+}
+.profile-User{
 
 }
-
+.timeline-picture{
+  width:100%;
+}
 .interactions-count{
   display:flex;
   justify-content: space-around;

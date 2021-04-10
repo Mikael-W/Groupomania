@@ -9,7 +9,7 @@
 <style lang="css">
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 body, #app{
-  font-family: Poppins;
+  font-family: Poppins, sans-serif;
   margin: 0;
   padding: 0;
   width: 100vw;
