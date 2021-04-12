@@ -43,7 +43,7 @@ module.exports = {
         const id = req.params.id;
         const updatedPublication ={
             content: req.body.content,
-            imageUrl: req.file.filename
+            imageUrl: req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null
         }
 
         const userId = req.body.userId;

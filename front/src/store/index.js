@@ -1,5 +1,6 @@
 import { createStore } from 'vuex'
 
+
 const axios = require('axios');
 
 const instance = axios.create({
@@ -23,6 +24,11 @@ if(!user){
     };
   }
 }
+//Vue.prototype.$http = axios;
+//const token = localStorage.getItem('token')
+//if (token) {
+//  Vue.prototype.$http.defaults.headers.common['Authorization'] = token
+//}
 const store =  createStore({
   state: {
     status: '',
@@ -33,7 +39,8 @@ const store =  createStore({
       lastname:'',
       email:'',
       imageUrl: ''
-    }
+    },
+    publications:[]
   },
   mutations: {
     SET_STATUS: function(state, status){
@@ -47,21 +54,22 @@ const store =  createStore({
     USER_INFOS: function (state,userInfos){
       state.user = userInfos;
     },
-    PUBLICATIONS_LIST: function(state, publications){
-      state.publications = publications;
-    },
-    ADD_PUBLICATION: function(state,newPublication){
-      state.publications.unshift(newPublication);
-    },
-    COMMENTS_LIST: function(state, comments){
-      state.comments = comments;
-    },
     LOG_OUT: function (state){
       state.user = {
         userId: -1,
         token:'',
       }
       localStorage.removeItem('user');
+    },
+    PUBLICATIONS_LIST: function(state, publications){
+      state.publications = publications;
+    },
+    ADD_PUBLICATION: function(state,newPublication){
+      state.publications.unshift(newPublication);
+    },
+    DELETE_PUBLICATION: (state, publicationId) => {
+      const i = state.publications.map(publication => publication.id).indexOf(publicationId);
+      state.publications.splice(i,1);
     }
   },
   actions: {
@@ -97,7 +105,7 @@ const store =  createStore({
     getUserInfos: ({state, commit}) => {
     instance.post('users/' + state.user.user)
       .then(function (response){
-        console.log(response);
+        console.log(response.data);
         commit('USER_INFOS', response.data);
       })
       .catch(function(error){
@@ -107,6 +115,7 @@ const store =  createStore({
     getPublications: ({commit}) => {
       instance.get('publications/all')
         .then(function (response){
+          console.log(response.data)
           commit('PUBLICATIONS_LIST', response.data);
         })
         .catch(function(response){
@@ -116,8 +125,16 @@ const store =  createStore({
     addPublication ({ commit }, publicationBody) {
       instance.post('publications/add',publicationBody)
         .then(response => {
+          console.log(response.data)
           commit('ADD_PUBLICATION', response.post)
         })
+    },
+    deletePublication ({commit}, publicationId){
+      instance.delete('publications/' + publicationId)
+      .then(()=> commit('DELETE_PUBLICATION', publicationId))
+      .catch(error => {
+        console.log({error : error})
+      })
     }
   }
 })

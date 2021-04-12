@@ -41,7 +41,7 @@ export default {
       return{
       publishModal:false,
         content:'',
-        image :null,
+        image :'',
         url:null
       }
     },
@@ -67,7 +67,6 @@ export default {
              image:this.image
          })
          .then(function (){
-             console.log(this.image)
             console.log('publié')
         },function(error){
         console.log (error);

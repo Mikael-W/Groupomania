@@ -1,7 +1,6 @@
 const models = require('../models');
 const bcrypt = require('bcrypt');
 const jwt    = require('jsonwebtoken');
-const { response } = require('express');
 
 const EMAIL_REGEX     = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const PASSWORD_REGEX  = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{4,8}$/;
@@ -40,8 +39,8 @@ module.exports ={
                   firstname: req.body.firstname,
                   lastname: req.body.lastname,
                   bio: req.body.bio,
-                  imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
-                  bgUrl:`${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+                  imageUrl: req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null,
+                  bgUrl: req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null,
                   password: hash,
                   isAdmin: 0
                 }
@@ -107,7 +106,8 @@ module.exports ={
         const userId = req.params.id;
         const updatedProfile = {
             bio: req.body.bio,
-            imageUrl:`${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+            imageUrl: req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null,
+            bgUrl: req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null
         }
 
         models.User.update(updatedProfile, {where: {id:userId}})
