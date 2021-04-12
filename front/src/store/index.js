@@ -40,7 +40,8 @@ const store =  createStore({
       email:'',
       imageUrl: ''
     },
-    publications:[]
+    publications:[],
+    comments:[]
   },
   mutations: {
     SET_STATUS: function(state, status){
@@ -67,9 +68,17 @@ const store =  createStore({
     ADD_PUBLICATION: function(state,newPublication){
       state.publications.unshift(newPublication);
     },
-    DELETE_PUBLICATION: (state, publicationId) => {
-      const i = state.publications.map(publication => publication.id).indexOf(publicationId);
-      state.publications.splice(i,1);
+    UPDATE_PUBLICATION: function(state, modifiedPublication){
+      const publicationIndex = state.publications.findIndex(
+        publication => publication.id === modifiedPublication.id
+      )
+      state.publications[postIndex] = modifiedPost
+    },
+    DELETE_PUBLICATION: function(state, publicationId){
+      state.publications.filter(publication => publication.id !== publicationId);
+    },
+    COMMENTS_LIST: function(state, comments){
+      state.comments = comments;
     }
   },
   actions: {
@@ -112,6 +121,15 @@ const store =  createStore({
         console.log(error);
       });
     },
+    editUser: ({state, commit}) => {
+      instance.put('users/' + state.user.user)
+      .then(function(response){
+        console.log(response)
+        commit('USER_INFOS', response.data)
+      }).catch(error => {
+        console.log({error:error});
+      });
+    },
     getPublications: ({commit}) => {
       instance.get('publications/all')
         .then(function (response){
@@ -128,12 +146,34 @@ const store =  createStore({
           console.log(response.data)
           commit('ADD_PUBLICATION', response.post)
         })
+        .catch(error => {
+          console.log({error : error})
+        })
     },
-    deletePublication ({commit}, publicationId){
-      instance.delete('publications/' + publicationId)
-      .then(()=> commit('DELETE_PUBLICATION', publicationId))
+    editPublication({commit}, publicationId){
+      instance.put('publications/' + publicationId)
+      .then(response => {
+        console.log(response.data)
+        commit('UPDATE_PUBLICATION', response.post)
+      })
       .catch(error => {
         console.log({error : error})
+      })
+    },
+    deletePublication ({commit}, publicationId) {
+      instance.delete('publications/' + publicationId)
+      .then(()=> {commit('DELETE_PUBLICATION', publicationId)})
+      .catch(error => {
+        console.log({error : error})
+      })
+    },
+    getPublicationComments({commit}) {
+      instance.get(`publications/${publication.id}/comments`)
+      .then(function(response){
+        console.log(response)
+        commit('COMMENTS_LIST', response.data)
+      }).catch(error => {
+        console.log({error:error})
       })
     }
   }

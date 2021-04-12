@@ -4,9 +4,9 @@
     <div class="profile-pictures">
       <div class="user_profile">
         <div class="user_profile-pictures">
-          <img class="user-bg" :src="url || user.bgUrl" alt="" />
+          <img class="user-bg" :src="user.bgUrl" alt="" />
           <div class="user-picture">
-          <img class="user-img" :src="url || user.imageUrl" />
+          <img class="user-img" :src="user.imageUrl" />
           </div>
         </div>
     </div>
