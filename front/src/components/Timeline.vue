@@ -3,7 +3,7 @@
     <div class="publication-container">
       <div
         v-for="publication in publications"
-        :key="publication"
+        :key="publication.id"
         class="publication-card"
       >
         <div class="profile-publication">
@@ -12,7 +12,7 @@
             <img class="modif-icon" src="../assets/points.png" alt="" />
           </button>
           <div v-show="editMenu" class="editMenu">
-            <button @click="deletePublication()" class="delete-btn">
+            <button @click="deletePublication(publication.id, publication.userId)" class="delete-btn">
               Supprimer la publication
             </button>
             <button @click="editModal = true" class="edit-btn">
@@ -55,12 +55,12 @@
           <div class="userSignup">
             <div class="user_pict-link">
             <img class="user_profile-picture" :src="user.imageUrl"  alt="">
-            <div> {{user.firstname}} {{user.lastname}}</div>
+            <span>Modifier la publication</span>
             </div>
             <button @click="editModal=false" class="closemodalbtn">X</button>
             <div class="edit-form">
-            <textarea v-model="content" class="text-content" type="text-area" placeholder="Que voulez vous dire?" />
-            <div class="file-preview"><img class="file-preview_image" v-if="url" :src="publication.imageUrl" alt=""></div>
+            <textarea v-model="content" ref="publication.id" class="text-content" type="text-area" placeholder="Que voulez vous dire?" />
+            <div class="file-preview"><img class="file-preview_image" ref="publications.id" v-if="image" :src="image" alt=""></div>
             <div class="action-container_btn">
             <button @click="onPickFile" class="upload-btn">Photo<img class="upload-icon" src="../assets/image-gallery.png" alt=""></button>
             <input class="file-upload_bnt" type="file" ref="fileInput" accept="image/*" @change="onFilePicked"/>
@@ -84,7 +84,7 @@ export default {
       editModal: false,
       commentsContainer:false,
       image:null,
-      count:null
+      count:null,
     };
   },
   components: {},
@@ -100,7 +100,7 @@ export default {
   computed: {
     ...mapState({
       user: "user",
-      publications: "publications",
+      publications: ["publications"],
       comments: 'comments'
     }),
   },
@@ -115,20 +115,22 @@ export default {
     },
     editPublication() {
       this.$store.dispatch("editPublication", {
-        publicationId: this.publication.id,
+        id: this.id,
         content: this.content,
         image: this.image
       })
+      .then(function(result){
+        console.log(result);
+      })
     },
-    deletePublication() {
-      this.$store
-        .dispatch("deletePublication", {
-          id: this.publications.id,
-          userId: this.publications.userId,
+    deletePublication(id, userId) {
+      this.$store.dispatch("deletePublication", {
+          id: id,
+          userId: userId
         })
         .then(
-          function () {
-            console.log("publication supprimée");
+          function (response) {
+            console.log(response)
           },
           function (error) {
             console.log(error);

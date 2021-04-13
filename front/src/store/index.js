@@ -24,11 +24,6 @@ if(!user){
     };
   }
 }
-//app.config.globalProperties = axios;
-//const token = localStorage.getItem('token')
-//if (token) {
-//  app.config.globalProperties.$http.defaults.headers.common['Authorization'] = token
-//}
 const store =  createStore({
   state: {
     status: '',
@@ -68,14 +63,22 @@ const store =  createStore({
     ADD_PUBLICATION: function(state,newPublication){
       state.publications.unshift(newPublication);
     },
-    UPDATE_PUBLICATION: function(state, modifiedPublication){
-      const publicationIndex = state.publications.findIndex(
-        publication => publication.id === modifiedPublication.id
+    GET_ONE_PUBLICATION: function(state, publication){
+      state.publications = state.publications.filter(
+        p => p.id != publication.id
       )
-      state.publications[publicationIndex] = modifiedPublication
+      console.log(publication)
     },
-    DELETE_PUBLICATION: function(state, publicationId){
-      state.publications.filter(publication => publication.id !== publicationId);
+    DELETE_PUBLICATION: function(state, publication){
+     // let a = state.publications.filter(p => p.id !== publication.id);
+     // while(state.publications.length) state.publications.pop();
+     // state.publications.push(...a);
+     // console.log(state.publications)
+    const index = state.publications.findIndex(p => p.id === publication.id);
+
+    if (index !== -1) {
+    state.publications.splice(index, 1);
+}
     },
     COMMENTS_LIST: function(state, comments){
       state.comments = comments;
@@ -156,19 +159,21 @@ const store =  createStore({
           console.log({error : error})
         })
     },
-    editPublication({commit}, publicationId){
-      instance.put('publications/' + publicationId)
+    editPublication({commit}, publication){
+      instance.put(`publications/${publication.id}`)
       .then(response => {
-        console.log(response.data)
-        commit('UPDATE_PUBLICATION', response)
+        console.log(response)
+        commit('GET_ONE_PUBLICATION', publication)
       })
       .catch(error => {
         console.log({error : error})
       })
     },
-    deletePublication ({commit}, publicationId) {
-      instance.delete('publications/' + publicationId)
-      .then(()=> {commit('DELETE_PUBLICATION', publicationId)})
+    deletePublication ({commit}, publication) {
+      instance.delete('publications/' + publication.id)
+      .then((response)=> {
+        console.log(response)
+        commit('DELETE_PUBLICATION', publication)})
       .catch(error => {
         console.log({error : error})
       })

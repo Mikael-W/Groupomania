@@ -91,9 +91,9 @@ module.exports = {
     //},
     destroyPublication: function(req, res){
         const id = req.params.id; 
-        const userId = req.body.userId;
+       // const userId = req.body.userId;
 
-        models.Publication.destroy({where: {id: id, userId: userId}})
+        models.Publication.destroy({where: {id: id}})
         .then(result => {
             res.status(200).json({
             message:"publication deleted successfully"});
