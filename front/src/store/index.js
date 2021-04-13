@@ -24,10 +24,10 @@ if(!user){
     };
   }
 }
-//Vue.prototype.$http = axios;
+//app.config.globalProperties = axios;
 //const token = localStorage.getItem('token')
 //if (token) {
-//  Vue.prototype.$http.defaults.headers.common['Authorization'] = token
+//  app.config.globalProperties.$http.defaults.headers.common['Authorization'] = token
 //}
 const store =  createStore({
   state: {
@@ -72,13 +72,19 @@ const store =  createStore({
       const publicationIndex = state.publications.findIndex(
         publication => publication.id === modifiedPublication.id
       )
-      state.publications[postIndex] = modifiedPost
+      state.publications[publicationIndex] = modifiedPublication
     },
     DELETE_PUBLICATION: function(state, publicationId){
       state.publications.filter(publication => publication.id !== publicationId);
     },
     COMMENTS_LIST: function(state, comments){
       state.comments = comments;
+    },
+    ADD_COMMENT: function(state, newComment){
+      state.comments.unshift(newComment);
+    },
+    DELETE_COMMENT: function(state, commentId){
+      state.comments.filter(comment => comment.id !== commentId);
     }
   },
   actions: {
@@ -140,11 +146,11 @@ const store =  createStore({
           console.log(response);
         });
     },
-    addPublication ({ commit }, publicationBody) {
-      instance.post('publications/add',publicationBody)
+    addPublication ({ commit }, file) {
+      instance.post('publications/add',file,{headers:{'Content-Type':'multipart/form-data'}})
         .then(response => {
           console.log(response.data)
-          commit('ADD_PUBLICATION', response.post)
+          commit('ADD_PUBLICATION', response.data)
         })
         .catch(error => {
           console.log({error : error})
@@ -154,7 +160,7 @@ const store =  createStore({
       instance.put('publications/' + publicationId)
       .then(response => {
         console.log(response.data)
-        commit('UPDATE_PUBLICATION', response.post)
+        commit('UPDATE_PUBLICATION', response)
       })
       .catch(error => {
         console.log({error : error})
@@ -167,15 +173,32 @@ const store =  createStore({
         console.log({error : error})
       })
     },
-    getPublicationComments({commit}) {
-      instance.get(`publications/${publication.id}/comments`)
+    getPublicationComments({commit}, publications) {
+      instance.get(`publications/${publications.id}/comments`)
       .then(function(response){
         console.log(response)
         commit('COMMENTS_LIST', response.data)
       }).catch(error => {
         console.log({error:error})
       })
-    }
+    },
+    addComment({commit}, comments, commentBody){
+      instance.post(`publications/${comments.id}/comments/`, commentBody)
+      .then(function(response){
+        console.log(response)
+        commit('ADD_COMMENT', response)
+      })
+      .catch(error => {
+        console.log({error : error})
+      })
+    },
+    deleteComment ({commit}, publications, comments, commentId) {
+      instance.post(`publications/${publications.id}/comments/${comments.id}`)
+      .then(()=> {commit('DELETE_PUBLICATION', commentId)})
+      .catch(error => {
+        console.log({error : error})
+      })
+    }  
   }
 })
 export default store;

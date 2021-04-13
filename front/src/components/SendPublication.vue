@@ -17,15 +17,15 @@
             <div> {{user.firstname}} {{user.lastname}}</div>
             </div>
             <button @click="publishModal=false" class="closemodalbtn">X</button>
-            <div class="signup-form">
+            <form @submit.prevent="submitPublication" class="signup-form">
             <textarea v-model="content" class="text-content" type="text-area" placeholder="Que voulez vous dire?" />
-            <div class="file-preview"><img class="file-preview_image" v-if="url" :src="url" alt=""></div>
+            <div class="file-preview"><img class="file-preview_image" v-if="image" :src="image" alt=""></div>
             <div class="action-container_btn">
-            <button @click="onPickFile" class="upload-btn">upload<img class="upload-icon" src="../assets/image-gallery.png" alt=""></button>
+            <button @click="onPickFile" class="upload-btn">Choisir un fichier<img class="upload-icon" src="../assets/image-gallery.png" alt=""/></button>
             <input class="file-upload_bnt" type="file" ref="fileInput" accept="image/*" @change="onFilePicked"/>
             <button @click="addPublication()" class="publish-btn">Publier<img class="publish-icon" src="../assets/send.png" alt=""></button>
             </div>
-            </div>
+            </form>
           </div>
       </div>
     </teleport>
@@ -41,10 +41,9 @@ export default {
       return{
       publishModal:false,
         content:'',
-        image :'',
-        url:null
-      }
-    },
+        image :null,
+      };
+  },
   computed: {
     ...mapState({
       user: 'user',
@@ -56,22 +55,24 @@ export default {
       this.$refs.fileInput.click()
     },
     onFilePicked (event) {
-      const files = event.target.files[0];
-      this.image = files.name
-      this.url = URL.createObjectURL(files);
+       this.files = event.target.files[0];
+      const files = event.target.files
+      const fileReader = new FileReader()
+          fileReader.addEventListener('load', () => {
+          this.imageUrl = fileReader.result
+           })
+      fileReader.readAsDataURL(files[0]);
+      this.image = URL.createObjectURL(files[0]);
+      console.log(this.image)
     },
-     addPublication(){
-         this.$store.dispatch('addPublication',{
-             id:this.user.id,
-             content: this.content,
-             image:this.image
-         })
-         .then(function (){
-            console.log('publié')
-        },function(error){
-        console.log (error);
-        }) 
-    }
+    addPublication(){
+       const formData = new FormData();
+       let id = this.user.id
+       formData.append('id', JSON.stringify(id));
+       formData.append('content', this.content);
+       formData.append('image', this.files);
+         this.$store.dispatch('addPublication', formData);
+        },
   } 
 }
 
