@@ -107,7 +107,6 @@ module.exports ={
         const updatedProfile = {
             bio: req.body.bio,
             imageUrl: req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null,
-            bgUrl: req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null
         }
 
         models.User.update(updatedProfile, {where: {id:userId}})
@@ -119,7 +118,6 @@ module.exports ={
     }).catch(error => {
         res.status(200).json({
             message: "Somenthing went wrong",
-            error: result
         });
     })
 },

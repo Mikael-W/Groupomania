@@ -31,7 +31,7 @@
           </div>
           <div class="comments-count">
             <span class="count-number">0</span>
-            <span @click="commentsContainer = true">commentaires</span>
+            <span @click="getPublicationComments()" v-if="commentsContainer = true">commentaires</span>
           </div>
         </div>
         <div v-if="commentsContainer" class="comments-container">
@@ -41,8 +41,8 @@
             <div class="user_pict-link">
             <img class="user_profile-picture" :src="user.imageUrl"  alt="">
             <div class="sendbox-comment">
-            <input type="text" class="post-comment_container" placeholder="Votre commentaire..."/>
-            <button class="comment-btn"><img class="comment-send" src="../assets/send.png" alt=""></button>
+            <input v-model="content" type="text" class="post-comment_container" placeholder="Votre commentaire..."/>
+            <button @click="addComment(publication.id, publication.userId)" class="comment-btn"><img class="comment-send" src="../assets/send.png" alt=""></button>
             </div>
             </div>
         </div>
@@ -85,6 +85,7 @@ export default {
       commentsContainer:false,
       image:null,
       count:null,
+      content:'',
     };
   },
   components: {},
@@ -96,12 +97,16 @@ export default {
       "getPublicationComments",
       "editPublication"
     );
+    this.$store.commit(
+      "USER_INFOS",
+      "PUBLICATIONS_LIST"
+    )
   },
   computed: {
     ...mapState({
       user: "user",
       publications: ["publications"],
-      comments: 'comments'
+      comments: ["comments"]
     }),
   },
   methods: {
@@ -121,6 +126,18 @@ export default {
       })
       .then(function(result){
         console.log(result);
+      })
+    },
+    addComment(id,userId){
+      this.$store.dispatch("addComment",{
+        id: id,
+        userId: userId,
+        content: this.content
+      })
+      .then(function(){
+      },
+      function(error){
+        console.log(error)
       })
     },
     deletePublication(id, userId) {

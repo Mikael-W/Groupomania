@@ -12,6 +12,7 @@ import Header from '@/components/HomeHeader.vue'
 import Timeline from '@/components/Timeline.vue'
 import SendPublication from '@/components/SendPublication.vue'
 
+
 export default {
   name: 'Home',
   components: {
@@ -24,7 +25,7 @@ export default {
      this.$router.push('/');
       return ;
     }
-  }
+  },
 }
 </script>
 
