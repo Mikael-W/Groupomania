@@ -67,18 +67,19 @@ export default {
     },
     addPublication(){
        const formData = new FormData();
-       let id = this.user.id
-       formData.append('id', JSON.stringify(id));
+       formData.append('id', JSON.stringify(this.user.id));
+       formData.append('userUrl', this.user.imageUrl);
        formData.append('content', this.content);
        formData.append('image', this.files);
          this.$store.dispatch('addPublication', formData);
+         console.log(...formData);
         },
   } 
 }
 
 </script>
 
-<style scoped>
+<style>
 .publicationbox-layout{
     width: 100vw;
     display: flex;

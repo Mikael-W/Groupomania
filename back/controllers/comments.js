@@ -40,10 +40,9 @@ module.exports = {
     getAllComments: function(req, res){
         const options = {
             where: {publicationId: req.params.publicationId},
-            userId: req.body.userId,
             order:['createdAt']
         }
-        models.Comment.findAndCountAll(options).then(result => {
+        models.Comment.findAll(options).then(result => {
             res.status(200).json(result);
         }) .catch(error => {
             res.status(500).json({

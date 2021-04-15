@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
   Publication.init({
     userId: DataTypes.INTEGER,
     content: DataTypes.TEXT,
+    userUrl:DataTypes.STRING,
     imageUrl: DataTypes.STRING,
     likes: DataTypes.INTEGER
   }, {

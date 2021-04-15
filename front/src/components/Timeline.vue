@@ -7,15 +7,21 @@
         class="publication-card"
       >
         <div class="profile-publication">
-          <img class="user_profile-picture" src="" alt="" />
+          <img class="user_profile-picture" :src="publication.userUrl" alt="" />
           <button @click="editMenu = true">
             <img class="modif-icon" src="../assets/points.png" alt="" />
           </button>
           <div v-show="editMenu" class="editMenu">
-            <button @click="deletePublication(publication.id, publication.userId)" class="delete-btn">
+            <button
+              @click="deletePublication(publication.id, publication.userId)"
+              class="delete-btn"
+            >
               Supprimer la publication
             </button>
-            <button @click="editModal = true" class="edit-btn">
+            <button
+              @click="displayModificationModal(publication), (editModal = true)"
+              class="edit-btn"
+            >
               Modififer la publication
             </button>
           </div>
@@ -30,44 +36,95 @@
             <span class="count-number">0</span>
           </div>
           <div class="comments-count">
-            <span class="count-number">0</span>
-            <span @click="getPublicationComments()" v-if="commentsContainer = true">commentaires</span>
+            <span class="count-number">{{ comments.count }}</span>
+            <span
+              @click="
+                getAllcomments(publication.id), (commentsContainer = publication.id)
+              "
+              >commentaires</span
+            >
           </div>
         </div>
-        <div v-if="commentsContainer" class="comments-container">
-            <div class="comments" v-for="comment in comments" :key="comment"></div>
-            <div class="sendbox-border"></div>
-            <div class="user_publication-container">
-            <div class="user_pict-link">
+        <div v-if="commentsContainer == publication.id" class="comments-container">
+          <div class="comments-card" v-for="comment in comments" :key="comment.id">
+             <div class="user_pict-link">
             <img class="user_profile-picture" :src="user.imageUrl"  alt="">
-            <div class="sendbox-comment">
-            <input v-model="content" type="text" class="post-comment_container" placeholder="Votre commentaire..."/>
-            <button @click="addComment(publication.id, publication.userId)" class="comment-btn"><img class="comment-send" src="../assets/send.png" alt=""></button>
             </div>
+            <div class="comment">
+            <p class="comment-content">{{comment.content}}</p>
             </div>
-        </div>
           </div>
+          <div class="sendbox-border"></div>
+          <div class="user_comment-container">
+            <div class="user_pict-link">
+              <img class="user_profile-picture" :src="user.imageUrl" alt="" />
+              <div class="sendbox-comment">
+                <input
+                  v-model="content"
+                  type="text"
+                  class="post-comment_container"
+                  placeholder="Votre commentaire..."
+                />
+                <button
+                  @click="addComment(publication.id, publication.userId)"
+                  class="comment-btn"
+                >
+                  <img class="comment-send" src="../assets/send.png" alt="" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <teleport to="#modals">
       <div v-if="editModal" class="edit-modal">
         <div class="overlay"></div>
-          <div class="userSignup">
-            <div class="user_pict-link">
-            <img class="user_profile-picture" :src="user.imageUrl"  alt="">
+        <div class="userProfile">
+          <div class="user_pict-link">
+            <img class="user_profile-picture" :src="user.imageUrl" alt="" />
             <span>Modifier la publication</span>
-            </div>
-            <button @click="editModal=false" class="closemodalbtn">X</button>
-            <div class="edit-form">
-            <textarea v-model="content" ref="publication.id" class="text-content" type="text-area" placeholder="Que voulez vous dire?" />
-            <div class="file-preview"><img class="file-preview_image" ref="publications.id" v-if="image" :src="image" alt=""></div>
-            <div class="action-container_btn">
-            <button @click="onPickFile" class="upload-btn">Photo<img class="upload-icon" src="../assets/image-gallery.png" alt=""></button>
-            <input class="file-upload_bnt" type="file" ref="fileInput" accept="image/*" @change="onFilePicked"/>
-            <button @click="editPublication()" class="publish-btn">Enregistrer<img class="publish-icon" src="../assets/send.png" alt=""></button>
-            </div>
-            </div>
           </div>
+          <button @click="editModal = false" class="closemodalbtn">X</button>
+          <form @submit.prevent="submitPublication" class="edit-form">
+            <textarea
+              class="text-content"
+              v-model="currentPublication.content"
+              type="text-area"
+              placeholder="Que voulez vous dire?"
+            />
+            <div class="current-publication_picture" v-show="image == null"><img class="file-preview_image" :src="currentPublication.imageUrl" alt="" /></div>
+            <div class="file-preview">
+              <img class="file-preview_image" v-if="image" :src="image" alt="" />
+            </div>
+            <div class="action-container_btn">
+              <button @click="onPickFile" class="upload-btn">
+                Photo<img
+                  class="upload-icon"
+                  src="../assets/image-gallery.png"
+                  alt=""
+                />
+              </button>
+              <input
+                class="file-upload_bnt"
+                type="file"
+                ref="fileInput"
+                accept="image/*"
+                @change="onFilePicked"
+              />
+              <button
+                @click="editPublication(currentPublication)"
+                class="publish-btn"
+              >
+                Enregistrer<img
+                  class="publish-icon"
+                  src="../assets/send.png"
+                  alt=""
+                />
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </teleport>
   </div>
@@ -82,10 +139,11 @@ export default {
     return {
       editMenu: false,
       editModal: false,
-      commentsContainer:false,
-      image:null,
-      count:null,
-      content:'',
+      commentsContainer: null,
+      image: null,
+      count: null,
+      content: "",
+      currentPublication: {}
     };
   },
   components: {},
@@ -95,59 +153,78 @@ export default {
       "getUserInfos",
       "deletePublication",
       "getPublicationComments",
-      "editPublication"
+      "updatePublication"
     );
     this.$store.commit(
       "USER_INFOS",
-      "PUBLICATIONS_LIST"
-    )
+      "PUBLICATIONS_LIST",
+      "GET_ONE_PUBLICATION",
+      "COMMENTS_LIST"
+    );
   },
   computed: {
     ...mapState({
       user: "user",
       publications: ["publications"],
-      comments: ["comments"]
+      comments: ["comments"],
     }),
   },
   methods: {
-    onPickFile () {
-      this.$refs.fileInput.click()
+    onPickFile() {
+      this.$refs.fileInput.click();
     },
     onFilePicked (event) {
-      const files = event.target.files[0];
-      this.image = files.name
-      this.url = URL.createObjectURL(files);
+       this.files = event.target.files[0];
+      const files = event.target.files
+      const fileReader = new FileReader()
+          fileReader.addEventListener('load', () => {
+          this.imageUrl = fileReader.result
+           })
+      fileReader.readAsDataURL(files[0]);
+      this.image = URL.createObjectURL(files[0]);
+      console.log(this.files)
     },
-    editPublication() {
-      this.$store.dispatch("editPublication", {
-        id: this.id,
-        content: this.content,
-        image: this.image
-      })
-      .then(function(result){
-        console.log(result);
-      })
+    displayModificationModal(publication){
+       this.currentPublication = publication
     },
-    addComment(id,userId){
-      this.$store.dispatch("addComment",{
+    editPublication(currentPublication) {
+      const formData = new FormData();
+      formData.append("id",currentPublication.id);
+      formData.append("userId",currentPublication.userId);
+      formData.append("content",currentPublication.content);
+      formData.append("image",this.files);
+      console.log(this.files)
+      console.log(...formData);
+      this.$store.dispatch("UpdatePublication", [ formData, currentPublication.id ]);
+    },
+    addComment(id, userId) {
+      this.$store
+        .dispatch("addComment", {
+          id: id,
+          userId: userId,
+          content: this.content,
+        })
+        .then(
+          function () {},
+          function (error) {
+            console.log(error);
+          }
+        );
+    },
+    getAllcomments(id) {
+      this.$store.dispatch("getPublicationComments", {
         id: id,
-        userId: userId,
-        content: this.content
-      })
-      .then(function(){
-      },
-      function(error){
-        console.log(error)
-      })
+      });
     },
     deletePublication(id, userId) {
-      this.$store.dispatch("deletePublication", {
+      this.$store
+        .dispatch("deletePublication", {
           id: id,
-          userId: userId
+          userId: userId,
         })
         .then(
           function (response) {
-            console.log(response)
+            console.log(response);
           },
           function (error) {
             console.log(error);
@@ -188,7 +265,7 @@ export default {
 .editMenu {
   position: absolute;
   top: 1.5rem;
-  right:1rem;
+  right: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -203,76 +280,94 @@ button {
   background: white;
   cursor: pointer;
 }
-.action-container_btn{
+.action-container_btn {
   display: flex;
 }
-.closemodalbtn{
+.closemodalbtn {
   position: absolute;
-  top:1rem;
-  right:0.5rem;
+  top: 1rem;
+  right: 0.5rem;
   border: none;
   background: white;
   color: #042a5f;
   font-weight: bold;
-  font-size:1rem;
+  font-size: 1rem;
 }
 a {
   text-decoration: none;
 }
-.edit-modal{
+.edit-modal {
   position: fixed;
-  top:0;
-  bottom:0;
-  left:0;
-  right:0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   width: 100vw;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.overlay{
+.overlay {
   background: rgba(255, 255, 255, 0.7);
   position: fixed;
-  top:0;
-  bottom:0;
-  left:0;
-  right:0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
-.userSignup {
+.userProfile {
   z-index: 1;
   position: relative;
   width: 50vw;
-  height:auto;
+  height: auto;
   align-items: center;
   background: white;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 12px 12px 2px 1px rgba(0, 0, 0, 0.1);;
+  box-shadow: 12px 12px 2px 1px rgba(0, 0, 0, 0.1);
 }
-.signup-title{
+.signup-title {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width:100%;
+  width: 100%;
 }
-.upload-btn, .publish-btn{
-    display: flex;
-    align-items: center;
-    background: white;
-    justify-content: center;
-    width:25vw;
-    border-width: 1px;
-    border-color: grey;
-    border-style: solid;
-    padding: 10px 0;
+.text-content {
+  width: 95%;
+  border: none;
+  resize: vertical;
 }
-.file-upload_bnt{
-    display:none;
+.current-publication_picture{
+  width: 95%;
+  height: auto;
 }
-.upload-icon, .publish-icon{
-    width: 2.5vw;
+.file-preview {
+  width: 95%;
+  height: auto;
 }
-.edit-form{
+.file-preview_image {
+  width: 100%;
+}
+.upload-btn,
+.publish-btn {
+  display: flex;
+  align-items: center;
+  background: white;
+  justify-content: center;
+  width: 25vw;
+  border-width: 1px;
+  border-color: grey;
+  border-style: solid;
+  padding: 10px 0;
+}
+.file-upload_bnt {
+  display: none;
+}
+.upload-icon,
+.publish-icon {
+  width: 2.5vw;
+}
+.edit-form {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -288,30 +383,55 @@ a {
   border-top: 1px solid #d3d3d3;
   border-bottom: 1px solid #d3d3d3;
 }
-.comments-container{
-  width:100%;
+.comments-container {
+  width: 100%;
   background: white;
 }
-.post-comment_container{
-  width:35vw;
+.comments-card{
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+.comment {
+  width:fit-content;
+  height:fit-content;
+  max-width: 70%;
+  background: #d3d3d3;
+  border-radius: 8px;
+}
+.comment-content{
+  padding: 0 10px;
+  margin:0
+}
+.post-comment_container {
+  width: 35vw;
   height: 5vh;
-  border-radius: 8px ;
+  border-radius: 8px;
   background: #d3d3d3;
   text-indent: 10px;
 }
-.sendbox-border{
+.sendbox-border {
   align-self: center;
   height: 2px;
   width: 80%;
   background: #d3d3d3;
 }
-.sendbox-comment{
+.user_comment-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width:50%;
+  background: white;
+  margin: 0;
+  border-radius:6px;
+}
+.sendbox-comment {
   display: flex;
 }
-.comment-btn{
-  right:10px;
+.comment-btn {
+  right: 10px;
 }
-.comment-send{
+.comment-send {
   width: 1rem;
   height: 1rem;
 }
