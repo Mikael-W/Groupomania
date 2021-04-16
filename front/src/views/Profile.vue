@@ -5,12 +5,12 @@
       <div class="user_profile">
         <div class="user_profile-pictures">
           <div class="user-bg_box">
-          <img class="user-bg" :src="user.bgUrl || '../assets/photoW.png'" alt="" />
+          <img class="user-bg" :src="userInfos.bgUrl || '../assets/photoW.png'" alt="" />
           <button class="edit-bg_btn"><img class="user-bg_edit" src="../assets/photo.png" alt="">changer la photo de couverture</button>
           </div>
           <div class="user-picture">
           <div class="user-picture_box">
-          <img class="user-img" :src="user.imageUrl || '../assets/photo.png'"/>
+          <img class="user-img" :src="userInfos.imageUrl || '../assets/photo.png'"/>
           <button @click="onPickFile" class="edit-picture_btn"><img class="user-img_edit" src="../assets/photo.png" alt=""></button>
           <input class="file-upload_bnt" type="file" ref="fileInput" accept="image/*" @change="onFilePicked"/>
           <button @click="editUserAvatar()">Modifier</button>
@@ -19,9 +19,9 @@
         </div>
     </div>
     <div class="profile-data">
-        <span class="user-name"> {{user.firstname}} {{user.lastname}} </span>
+        <span class="user-name"> {{userInfos.firstname}} {{userInfos.lastname}} </span>
         <div class="user_profile-bio">
-          <p class="bio-text">{{user.bio}}</p>
+          <p class="bio-text">{{userInfos.bio}}</p>
         </div>
     </div>
         <div class="profile-timeline"></div>

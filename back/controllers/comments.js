@@ -72,15 +72,15 @@ module.exports = {
     },
     destroyComment: function(req, res){
         const id = req.params.id; 
-        const userId = req.body.userId;
         const publicationId = req.params.publicationId;
 
-        models.Comment.destroy({where: {id: id, userId: userId, publicationId: publicationId}})
+        models.Comment.destroy({where: {id: id, publicationId: publicationId}})
         .then(result => {
             res.status(200).json({
             message:"Comment deleted successfully"});
     }).catch(error => {
-        res.status(200).json({ message: "Somenthing went wrong"});
+        console.log(error)
+        res.status(200).json({ message: "Somenthing went wrong",});
     })
     }
 

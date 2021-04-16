@@ -13,8 +13,8 @@
       </div>
       <div class="user-side_profile">
         <div class="user-profile_container">
-         <router-link class="user-name" to="/Profile">{{user.firstname}}</router-link>
-        <img class="user_profile-pict" :src="user.imageUrl" alt="">
+         <router-link class="user-name" to="/Profile">{{userInfos.firstname}}</router-link>
+        <img class="user_profile-pict" :src="userInfos.imageUrl" alt="">
         </div>
         <button class="logout-Btn" @click="logout()"><img class="sign-out_icon" src="../assets/log-out.png" alt=""></button>
       </div>

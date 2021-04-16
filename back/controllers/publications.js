@@ -5,7 +5,7 @@ module.exports = {
     createPublication : function(req, res){
     const publication = {
         userId:req.body.id,
-        userUrl:req.body.userUrl,
+        //userUrl:req.body.userUrl,
         content: req.body.content,
         imageUrl: req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null
     }

@@ -3,18 +3,18 @@
     <div class="publicationbox-layout">
         <div class="user_publication-container">
             <div class="user_pict-link">
-            <img class="user_profile-picture" :src="user.imageUrl"  alt="">
-            <div @click="publishModal = true" class="postlink-container" role="button">Que voulez vous dire, {{user.firstname}} ?</div>
+            <img class="user_profile-picture" :src="userInfos.imageUrl"  alt="">
+            <div @click="publishModal = true" class="postlink-container" role="button">Que voulez vous dire, {{userInfos.firstname}} ?</div>
             </div>
         </div>
     </div>
     <teleport to="#modals">
-      <div v-if="publishModal" class="Signup-modal">
+      <div v-if="publishModal" class="publication-modal">
         <div class="overlay"></div>
-          <div class="userSignup">
+          <div class="userProfile">
               <div class="user_pict-link">
-            <img class="user_profile-picture" :src="user.imageUrl"  alt="">
-            <div> {{user.firstname}} {{user.lastname}}</div>
+            <img class="user_profile-picture" :src="userInfos.imageUrl"  alt="">
+            <div> {{userInfos.firstname}} {{userInfos.lastname}}</div>
             </div>
             <button @click="publishModal=false" class="closemodalbtn">X</button>
             <form @submit.prevent="submitPublication" class="signup-form">
@@ -46,7 +46,7 @@ export default {
   },
   computed: {
     ...mapState({
-      user: 'user',
+      userInfos:'userInfos',
       publications: 'publications'
     })
   },
@@ -67,8 +67,7 @@ export default {
     },
     addPublication(){
        const formData = new FormData();
-       formData.append('id', JSON.stringify(this.user.id));
-       formData.append('userUrl', this.user.imageUrl);
+       formData.append('id', JSON.stringify(this.userInfos.id));
        formData.append('content', this.content);
        formData.append('image', this.files);
          this.$store.dispatch('addPublication', formData);
@@ -79,7 +78,7 @@ export default {
 
 </script>
 
-<style>
+<style scoped>
 .publicationbox-layout{
     width: 100vw;
     display: flex;
@@ -118,6 +117,91 @@ export default {
 }
 .upload-icon, .publish-icon{
     width: 2.5vw;
+}
+.overlay {
+  background: rgba(255, 255, 255, 0.7);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.publication-modal {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.overlay {
+  background: rgba(255, 255, 255, 0.7);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.userProfile {
+  z-index: 1;
+  position: relative;
+  width: 50vw;
+  height: 50vh;
+  align-items: center;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 12px 12px 2px 1px rgba(0, 0, 0, 0.1);
+}
+.signup-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.text-content {
+  width: 95%;
+  border: none;
+  resize: vertical;
+}
+.current-publication_picture {
+  width: 95%;
+  height: auto;
+}
+.file-preview {
+  width: 95%;
+  height: auto;
+}
+.file-preview_image {
+  width: 100%;
+}
+.upload-btn,
+.publish-btn {
+  display: flex;
+  align-items: center;
+  background: white;
+  justify-content: center;
+  width: 25vw;
+  border-width: 1px;
+  border-color: grey;
+  border-style: solid;
+  padding: 10px 0;
+}
+.file-upload_bnt {
+  display: none;
+}
+.upload-icon,
+.publish-icon {
+  width: 2.5vw;
+}
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 </style>>
 

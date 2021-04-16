@@ -1,13 +1,10 @@
 <template>
   <div class="timeline-container">
-    <div class="publication-container">
-      <div
-        v-for="publication in publications"
-        :key="publication.id"
-        class="publication-card"
-      >
-        <div class="profile-publication">
+      <div class="publication-container">
+          <div  v-for="publication in publications"  :key="publication.id"  class="publication-card">
+            <div class="profile-publication">
           <img class="user_profile-picture" :src="publication.userUrl" alt="" />
+          <span>{{userInfos.firstname}} {{userInfos.lastname}}</span>
           <button @click="editMenu = true">
             <img class="modif-icon" src="../assets/points.png" alt="" />
           </button>
@@ -27,62 +24,59 @@
           </div>
         </div>
         <div class="publication-content">
-          <p>{{ publication.content }}</p>
-          <img class="timeline-picture" :src="publication.imageUrl" alt="" />
+            <p>{{ publication.content }}</p>
+            <img class="timeline-picture" :src="publication.imageUrl" alt="" />
         </div>
         <div class="interactions-count">
-          <div class="likes-count">
+            <div class="likes-count">
             <img class="like" src="../assets/like.png" alt="" />
             <span class="count-number">0</span>
-          </div>
-          <div class="comments-count">
-            <span class="count-number">{{ comments.count }}</span>
-            <span
-              @click="
-                getAllcomments(publication.id), (commentsContainer = publication.id)
-              "
-              >commentaires</span
-            >
-          </div>
-        </div>
-        <div v-if="commentsContainer == publication.id" class="comments-container">
-          <div class="comments-card" v-for="comment in comments" :key="comment.id">
-             <div class="user_pict-link">
-            <img class="user_profile-picture" :src="user.imageUrl"  alt="">
+            </div>
+            <div class="comments-count">
+                  <span class="count-number">{{ comments.count }}</span>
+                  <span  @click="  getAllcomments(publication.id),  (commentsContainer = publication.id)"  >commentaires</span>
+                  </div>
+            </div>
+        <div  v-if="commentsContainer == publication.id" class="comments-container">
+            <div  class="comments-card"  v-for="comment in comments"  :key="comment.id">
+              <div class="user_pict-link">
+              <img class="user_profile-picture" :id="userInfos.imageUrl" alt="" />
             </div>
             <div class="comment">
-            <p class="comment-content">{{comment.content}}</p>
+              <p v-if="modificationInput == false" class="comment-content">{{ comment.content }}</p>
+              <textarea v-if="modificationInput" name="comment-content_modification" v-model="currentComment.content"></textarea>
+              <button v-show="modificationInput" @click="updateComment(currentComment)">Publier</button>
+            </div>
+            <div class="comment-action_box">
+            <button @click="editCommentMenu= true"> 
+            <img class="comment-modification_img" src="../assets/points.png" alt="" />
+            </button>
+            <div class="edit-comment_menu" v-show="editCommentMenu">
+                <button @click="displayModificationComment(comment), (modificationInput = true), (comment == comment.id)">Modifier</button>
+                <button @click="deleteComment(comment)">Supprimer</button>
+            </div>
             </div>
           </div>
-          <div class="sendbox-border"></div>
-          <div class="user_comment-container">
-            <div class="user_pict-link">
-              <img class="user_profile-picture" :src="user.imageUrl" alt="" />
-              <div class="sendbox-comment">
-                <input
-                  v-model="content"
-                  type="text"
-                  class="post-comment_container"
-                  placeholder="Votre commentaire..."
-                />
-                <button
-                  @click="addComment(publication.id, publication.userId)"
-                  class="comment-btn"
-                >
+            <div class="user_comment-container">
+              <div class="user_pict-link">
+                <img class="user_profile-picture" :src="userInfos.imageUrl" alt="" />
+                <div class="sendbox-comment">
+                <textarea v-model="content" type="text-content" class="post-comment_container" placeholder="Votre commentaire..."/>
+                <button @click="addComment(publication.id, publication.userId)" class="comment-btn" >
                   <img class="comment-send" src="../assets/send.png" alt="" />
                 </button>
               </div>
             </div>
-          </div>
-        </div>
+         </div>
       </div>
     </div>
+  </div>
     <teleport to="#modals">
       <div v-if="editModal" class="edit-modal">
         <div class="overlay"></div>
         <div class="userProfile">
           <div class="user_pict-link">
-            <img class="user_profile-picture" :src="user.imageUrl" alt="" />
+            <img class="user_profile-picture" :src="userInfos.imageUrl" alt="" />
             <span>Modifier la publication</span>
           </div>
           <button @click="editModal = false" class="closemodalbtn">X</button>
@@ -93,9 +87,20 @@
               type="text-area"
               placeholder="Que voulez vous dire?"
             />
-            <div class="current-publication_picture" v-show="image == null"><img class="file-preview_image" :src="currentPublication.imageUrl" alt="" /></div>
+            <div class="current-publication_picture" v-show="image == null">
+              <img
+                class="file-preview_image"
+                :src="currentPublication.imageUrl"
+                alt=""
+              />
+            </div>
             <div class="file-preview">
-              <img class="file-preview_image" v-if="image" :src="image" alt="" />
+              <img
+                class="file-preview_image"
+                v-if="image"
+                :src="image"
+                alt=""
+              />
             </div>
             <div class="action-container_btn">
               <button @click="onPickFile" class="upload-btn">
@@ -131,7 +136,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 export default {
   name: "Timeline",
@@ -139,63 +144,59 @@ export default {
     return {
       editMenu: false,
       editModal: false,
+      editCommentMenu:false,
+      modificationInput:false,
       commentsContainer: null,
       image: null,
       count: null,
       content: "",
-      currentPublication: {}
+      currentPublication: {},
+      currentComment:{},
     };
   },
-  components: {},
+  components: {
+  },
   mounted: function () {
-    this.$store.dispatch(
-      "getPublications",
-      "getUserInfos",
-      "deletePublication",
-      "getPublicationComments",
-      "updatePublication"
-    );
-    this.$store.commit(
-      "USER_INFOS",
-      "PUBLICATIONS_LIST",
-      "GET_ONE_PUBLICATION",
-      "COMMENTS_LIST"
-    );
+    this.$store.dispatch("getPublications");
   },
   computed: {
     ...mapState({
-      user: "user",
+      userInfos:"userInfos",
       publications: ["publications"],
       comments: ["comments"],
     }),
+    ...mapActions(["getAllUsers","getUserInfos"]),
   },
   methods: {
     onPickFile() {
       this.$refs.fileInput.click();
     },
-    onFilePicked (event) {
-       this.files = event.target.files[0];
-      const files = event.target.files
-      const fileReader = new FileReader()
-          fileReader.addEventListener('load', () => {
-          this.imageUrl = fileReader.result
-           })
+    onFilePicked(event) {
+      this.files = event.target.files[0];
+      const files = event.target.files;
+      const fileReader = new FileReader();
+      fileReader.addEventListener("load", () => {
+        this.imageUrl = fileReader.result;
+      });
       fileReader.readAsDataURL(files[0]);
       this.image = URL.createObjectURL(files[0]);
-      console.log(this.files)
+      console.log(this.files);
     },
-    displayModificationModal(publication){
-       this.currentPublication = publication
+    displayModificationModal(publication) {
+      this.currentPublication = publication;
     },
     editPublication(currentPublication) {
       const formData = new FormData();
-      formData.append("id",currentPublication.id);
-      formData.append("userId",currentPublication.userId);
-      formData.append("content",currentPublication.content);
-      formData.append("image",this.files);
-      console.log(this.files)
+      formData.append("id", currentPublication.id);
+      formData.append("userId", currentPublication.userId);
+      formData.append("content", currentPublication.content);
+      formData.append("image", this.files);
+      console.log(this.files);
       console.log(...formData);
-      this.$store.dispatch("UpdatePublication", [ formData, currentPublication.id ]);
+      this.$store.dispatch("UpdatePublication", [
+        formData,
+        currentPublication.id,
+      ]);
     },
     addComment(id, userId) {
       this.$store
@@ -216,17 +217,38 @@ export default {
         id: id,
       });
     },
+    displayModificationComment(comment){
+      this.currentComment = comment;
+      console.log(comment)
+    },
+    updateComment(){
+      this.$store.dispatch('updateComment',{
+        id : this.currentComment.id,
+        userId: this.currentComment.userId,
+        publicationId: this.currentComment.publicationId,
+        content: this.currentComment.content
+      })
+    },
+    deleteComment(comment){
+      console.log(comment)
+    this.$store
+        .dispatch("deleteComment", {
+          id: comment.id,
+          userId: comment.userId,
+          publicationId:comment.publicationId,
+        })
+        .then(function (error) {
+            console.log(error);
+          }
+        );
+    },
     deletePublication(id, userId) {
       this.$store
         .dispatch("deletePublication", {
           id: id,
           userId: userId,
         })
-        .then(
-          function (response) {
-            console.log(response);
-          },
-          function (error) {
+        .then(function (error) {
             console.log(error);
           }
         );
@@ -256,23 +278,16 @@ export default {
   margin: 1rem 0;
   border-radius: 6px;
 }
-.modif-icon {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 1.5vw;
-}
-.editMenu {
-  position: absolute;
-  top: 1.5rem;
-  right: 1rem;
-  display: flex;
-  flex-direction: column;
+.profile-publication{
+  position: relative;
+  display:flex;
   align-items: center;
-  width: 30%;
-  height: 30%;
-  background: white;
-  border: solid 1px grey;
+}
+.modif-icon{
+  position: absolute;
+  top:1rem;
+  right:10px;
+  width: 1rem;
 }
 button {
   appearance: none;
@@ -337,7 +352,7 @@ a {
   border: none;
   resize: vertical;
 }
-.current-publication_picture{
+.current-publication_picture {
   width: 95%;
   height: auto;
 }
@@ -384,24 +399,40 @@ a {
   border-bottom: 1px solid #d3d3d3;
 }
 .comments-container {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   background: white;
 }
-.comments-card{
+.comments-card {
   display: flex;
   align-items: center;
   margin: 10px 0;
 }
 .comment {
-  width:fit-content;
-  height:fit-content;
+  width: fit-content;
+  height: fit-content;
   max-width: 70%;
   background: #d3d3d3;
   border-radius: 8px;
 }
-.comment-content{
+.comment-modification_img {
+  width: 1rem;
+  height: 7px;
+  margin: 8px;
+  padding: 8px;
+  border-radius: 100%;
+  background: #d3d3d3;
+}
+.edit-comment_menu{
+  width: 50px;
+  height:50px;
+  background: red;
+  box-shadow: 10px 10px 10px #d3d3d3
+}
+.comment-content {
   padding: 0 10px;
-  margin:0
+  margin: 0;
 }
 .post-comment_container {
   width: 35vw;
@@ -416,14 +447,14 @@ a {
   width: 80%;
   background: #d3d3d3;
 }
-.user_comment-container{
+.user_comment-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width:50%;
+  width: 50%;
   background: white;
   margin: 0;
-  border-radius:6px;
+  border-radius: 6px;
 }
 .sendbox-comment {
   display: flex;

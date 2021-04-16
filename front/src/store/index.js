@@ -7,23 +7,23 @@ const instance = axios.create({
   baseURL: 'http://localhost:3000/api/'
 });
 
-axios.interceptors.request.use(
-  function (config) {
-    // Do something before request is sent
-    // use getters to retrieve the access token from vuex 
-    // store
-    const token = store.getters.accessToken;
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-      console.log(token);
-    }
-    return config;
-  },
-  function (error) {
-    // Do something with request error
-    return Promise.reject(error);
-  }
-);
+//axios.interceptors.request.use(
+//  function (config) {
+//    // Do something before request is sent
+//    // use getters to retrieve the access token from vuex 
+//    // store
+//    const token = store.getters.accessToken;
+//    if (token) {
+//      config.headers.Authorization = `Bearer ${token}`;
+//      console.log(token);
+//    }
+//    return config;
+//  },
+//  function (error) {
+//    // Do something with request error
+//    return Promise.reject(error);
+//  }
+//);
 
 let user = localStorage.getItem('user');
 if (!user) {
@@ -46,21 +46,13 @@ const store = createStore({
   state: {
     status: '',
     user: user,
-    userInfos: {
-      id: '',
-      firstname: '',
-      lastname: '',
-      email: '',
-      imageUrl: '',
-      bgUrl: '',
-    },
+    userInfos: {},
     publications: [],
     comments: []
   },
   mutations: {
     SET_STATUS: function (state, status) {
       state.status = status;
-      console.log(status);
     },
     LOG_USER: function (state, user) {
       instance.defaults.headers.common['Authorization'] = user.token;
@@ -68,7 +60,8 @@ const store = createStore({
       state.user = user;
     },
     USER_INFOS: function (state, userInfos) {
-      state.user = userInfos;
+      state.userInfos = userInfos;
+      console.log(userInfos)
     },
     SET_USER: function (state, newInfos) {
       state.userInfos = newInfos;
@@ -93,7 +86,6 @@ const store = createStore({
         p => p.id === modifiedPublication.id)
       state.publications[publicationIndex] = modifiedPublication
       state.publications = [...state.publications]
-      console.log(publicationIndex)
     },
     DELETE_PUBLICATION: function (state, publication) {
       const index = state.publications.findIndex(p => p.id === publication.id && publication.userId === user.id);
@@ -109,8 +101,17 @@ const store = createStore({
     ADD_COMMENT: function (state, newComment) {
       state.comments.unshift(newComment);
     },
-    DELETE_COMMENT: function (state, commentId) {
-      state.comments.filter(comment => comment.id !== commentId);
+    UPDATE_COMMENT:function (state, modifiedComment) {
+      const commentIndex = state.publications.findIndex(
+        p => p.id === modifiedComment.id)
+      state.comments[commentIndex] = modifiedComment
+      state.comments = [...state.comments]
+    },
+    DELETE_COMMENT: function (state, comment) {
+      const index = state.comments.findIndex(c => c.id === comment.id);
+      if (index !== -1) {
+        state.comments.splice(index, 1);
+      }
     }
   },
   actions: {
@@ -120,6 +121,7 @@ const store = createStore({
         instance.post('users/login', userInfos)
           .then(function (response) {
             commit('SET_STATUS', '');
+            console.log(response.data)
             commit('LOG_USER', response.data);
             resolve(response);
           })
@@ -143,9 +145,9 @@ const store = createStore({
           });
       });
     },
-    getUserInfos: ({ state, commit}) => {
-      instance.post(`users/${state.user.user}`)
-      //instance.post(`users/${userId ?? state.user.user}`)
+    getUserInfos: ({commit, state}) => {
+      console.log(state.user);
+      instance.get(`users/${state.user.user}`)
         .then(function (response) {
           commit('USER_INFOS', response.data);
         })
@@ -153,6 +155,16 @@ const store = createStore({
           console.log(error);
         });
     },
+    getAllUsers: ({commit}) => {
+      instance.get('users/all')
+        .then(function (response) {
+          console.log(response.data)
+          commit('USER_INFOS', response.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      },
     editUser: ({ state, commit }, file) => {
       instance.put(`users/${state.user.id}`, file, { headers: { 'Content-Type': 'multipart/form-data' } })
         .then(response => {
@@ -225,9 +237,21 @@ const store = createStore({
           console.log({ error: error })
         })
     },
-    deleteComment({ commit }, publications, comments, commentId) {
-      instance.post(`publications/${publications.id}/comments/${comments.id}`)
-        .then(() => { commit('DELETE_PUBLICATION', commentId) })
+    updateComment({commit},publication, comment, content){
+    instance.put(`publications/${publication.id}/comments/${comment.id}`,content)
+        .then(response => {
+          console.log(response)
+          commit('UPDATE_COMMENT', content)
+        })
+        .catch(error => {
+          console.log({ error: error })
+        })
+    },
+    deleteComment({ commit}, comment) {
+      instance.delete(`publications/${comment.publicationId}/comments/${comment.id}`)
+        .then((response) => { 
+          console.log(response)
+          commit('DELETE_PUBLICATION', comment) })
         .catch(error => {
           console.log({ error: error })
         })
