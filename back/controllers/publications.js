@@ -62,35 +62,30 @@ module.exports = {
         });
     })
     },
-    //likeDislikePublication: function(req,res){
-    //    const userId = req.body.userId
-    //    const like = req.body.like
-    //    const publicationId = req.params.id
-    //    models.Publication.findOne({where: {id: publicationId}})
-    //        .then(publication => {
-    //            const newValues = {
-    //                usersLiked: publication.usersLiked,
-    //                likes:0
-    //            }
-    //            switch(like){
-    //                case 1:
-    //                newValues.usersLiked.push(userId)
-    //                break
-    //                case 0:
-    //                newValues.usersLiked.includes(userId)
-    //                // delete like
-    //                const index = newValues.usersLiked.indexOf(userId)
-    //                newValues.usersLiked.splice(index, 1)
-    //                break
-    //            };
-    //            //likes count
-    //            newValues.likes = newValues.usersLiked.length
-    //            Publication.update({where: {id : publicationId}, newValues})
-    //                .then(() => res.status(200).json({ message: 'Like ajouté' }))
-    //                .catch(error => res.status(400).json({ error }))
-    //        })
-    //        .catch(error => res.status(500).json({ error }))
-    //},
+    likes: function(req,res){
+        const userId = req.body.userId
+        const publicationId = req.params.id
+        models.Likes.findOne({where: {id: publicationId}})
+            .then(like => {
+                switch(like){
+                    case 1:
+                    like.push(userId)
+                    break
+                    case 0:
+                    disLiked.includes(userId)
+                    // delete like
+                    const index = disLiked.indexOf(userId)
+                    disLiked.splice(index, 1)
+                    break
+                };
+                //likes count
+                likes = this.likes.length
+                Publication.update({where: {id : publicationId}})
+                    .then(() => res.status(200).json({ message: 'Like ajouté' }))
+                    .catch(error => res.status(400).json({ error }))
+            })
+            .catch(error => res.status(500).json({ error }))
+    },
     destroyPublication: function(req, res){
         const id = req.params.id; 
        // const userId = req.body.userId;

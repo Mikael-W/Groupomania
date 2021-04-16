@@ -13,6 +13,7 @@ router.get('/all', auth, publicationsCtrl.getAllPublication);
 router.get('/:id',auth, publicationsCtrl.getOnePublication);
 router.put('/:id',auth, multer.uploadImage, publicationsCtrl.updatePublication);
 router.delete('/:id',auth, publicationsCtrl.destroyPublication);
+router.post('/:id', publicationsCtrl.likes)
 
 router.post('/:publicationId/comments',auth, commentsCtrl.createComment);
 router.get('/:publicationId/comments',auth, commentsCtrl.getAllComments);

@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Publication.belongsTo(models.User, {foreignKey:'userId'})
       Publication.hasMany(models.Comment)
+      Publication.hasMany(models.Likes)
     }
   };
   Publication.init({
