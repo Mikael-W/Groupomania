@@ -43,17 +43,17 @@
               <img class="user_profile-picture" :id="userInfos.imageUrl" alt="" />
             </div>
             <div class="comment">
-              <p v-if="modificationInput == false" class="comment-content">{{ comment.content }}</p>
-              <textarea v-if="modificationInput" name="comment-content_modification" v-model="currentComment.content"></textarea>
-              <button v-show="modificationInput" @click="updateComment(currentComment)">Publier</button>
+              <p v-if="modificationInput != comment.id " class="comment-content">{{ comment.content }}</p>
+              <textarea v-if="modificationInput == comment.id" name="comment-content_modification" v-model="currentComment.content"></textarea>
+              <button v-show="modificationInput == comment.id" @click="updateComment(comment)">Publier</button>
             </div>
             <div class="comment-action_box">
-            <button @click="editCommentMenu= true"> 
+            <button @click="(editCommentId = comment.id)"> 
             <img class="comment-modification_img" src="../assets/points.png" alt="" />
             </button>
-            <div class="edit-comment_menu" v-show="editCommentMenu">
-                <button @click="displayModificationComment(comment), (modificationInput = true), (comment == comment.id)">Modifier</button>
-                <button @click="deleteComment(comment)">Supprimer</button>
+            <div class="edit-comment_menu" v-show="editCommentId == comment.id">
+                <button @click="displayModificationComment(comment), (modificationInput = comment.id),(editCommentId = null)">Modifier</button>
+                <button @click="deleteComment(comment),(editCommentId = null)">Supprimer</button>
             </div>
             </div>
           </div>
@@ -144,8 +144,8 @@ export default {
     return {
       editMenu: false,
       editModal: false,
-      editCommentMenu:false,
-      modificationInput:false,
+      editCommentId:null,
+      modificationInput:null,
       commentsContainer: null,
       image: null,
       count: null,
@@ -221,13 +221,14 @@ export default {
       this.currentComment = comment;
       console.log(comment)
     },
-    updateComment(){
+    updateComment(comment){
       this.$store.dispatch('updateComment',{
-        id : this.currentComment.id,
-        userId: this.currentComment.userId,
-        publicationId: this.currentComment.publicationId,
-        content: this.currentComment.content
+        id : comment.id,
+        userId: comment.userId,
+        publicationId: comment.publicationId,
+        content: comment.content
       })
+      this.modificationInput = null;
     },
     deleteComment(comment){
       console.log(comment)
@@ -425,9 +426,8 @@ a {
   background: #d3d3d3;
 }
 .edit-comment_menu{
-  width: 50px;
-  height:50px;
-  background: red;
+  width: fit-content;
+  height:fit-content;
   box-shadow: 10px 10px 10px #d3d3d3
 }
 .comment-content {
