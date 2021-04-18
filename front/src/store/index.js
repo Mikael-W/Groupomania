@@ -86,7 +86,7 @@ const store = createStore({
       console.log(comments);
     },
     ADD_COMMENT: function (state, newComment) {
-      state.comments.unshift(newComment);
+      state.comments.push(newComment);
     },
     UPDATE_COMMENT: function (state, modifiedComment) {
       const commentIndex = state.comments.findIndex(
@@ -260,7 +260,8 @@ const store = createStore({
         })
     },
     addComment({ commit }, comment) {
-      instance.post(`publications/${comment.id}/comments`,comment)
+      instance.post(`publications/${comment.id}/comments`,comment,
+      {'Content-Type' : 'application/form-data'})
         .then(function (response) {
           console.log(response)
           commit('ADD_COMMENT', comment)

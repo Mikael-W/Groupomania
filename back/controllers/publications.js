@@ -40,10 +40,10 @@ module.exports = {
     getAllPublication: function (req, res) {
         models.Publication.findAll({
             order:[
-                 'createdAt'
+                 'id desc'
             ],
             include:{
-                model:models.User
+                model:models.User,
             }}).then(result => {
             res.status(200).json(result);
         }).catch(error => {
