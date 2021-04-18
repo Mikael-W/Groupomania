@@ -172,8 +172,9 @@ export default {
   height: auto;
 }
 .file-preview {
-  width: 95%;
+  max-width:95%;
   height: auto;
+  max-height: 500px;
 }
 .file-preview_image {
   width: 100%;

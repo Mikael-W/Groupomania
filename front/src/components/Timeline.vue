@@ -3,8 +3,12 @@
       <div class="publication-container">
           <div  v-for="publication in publications"  :key="publication.id"  class="publication-card">
             <div class="profile-publication">
-          <img class="user_profile-picture" :src="publication.userUrl" alt="" />
-          <span>{{userInfos.firstname}} {{userInfos.lastname}}</span>
+          <router-link class="user-name" :to="{ name: 'Profile', params:{userId: publication.User.id}}">
+          <img class="user_profile-picture" :src="publication.User.imageUrl" alt="" />
+          </router-link>
+          <router-link class="user-name" :to="{ name: 'Profile', params:{userId: publication.User.id}}">
+          <span>{{publication.User.firstname}} {{publication.User.lastname}}</span>
+          </router-link>
           <button @click="editMenu = true">
             <img class="modif-icon" src="../assets/points.png" alt="" />
           </button>
@@ -24,23 +28,26 @@
           </div>
         </div>
         <div class="publication-content">
-            <p>{{ publication.content }}</p>
-            <img class="timeline-picture" :src="publication.imageUrl" alt="" />
+            <p class="publication-text">{{ publication.content }}</p>
         </div>
+        <img class="timeline-picture" :src="publication.imageUrl" alt="" />
         <div class="interactions-count">
             <div class="likes-count">
-            <img class="like" src="../assets/like.png" alt="" />
-            <span class="count-number">0</span>
+            <img @click="addLike(publication.id)" v-if="likesCount >= 1" class="like" src="../assets/like.png" aria-labelly="button" alt="" />
+            <img @click="addLike(publication.id)" v-if="likeCount == 0" class="like" src="../assets/likew.png" aria-labelly="button" alt="" />
+            <span class="likes-count">{{likesCount == publication.id}}</span>
             </div>
             <div class="comments-count">
                   <span class="count-number">{{ comments.count }}</span>
-                  <span  @click="  getAllcomments(publication.id),  (commentsContainer = publication.id)"  >commentaires</span>
+                  <span class="comments-btn" @click="getAllcomments(publication.id),  (commentsContainer = publication.id)"  >commentaires</span>
                   </div>
             </div>
         <div  v-if="commentsContainer == publication.id" class="comments-container">
             <div  class="comments-card"  v-for="comment in comments"  :key="comment.id">
               <div class="user_pict-link">
-              <img class="user_profile-picture" :id="userInfos.imageUrl" alt="" />
+              <router-link :to="{ name: 'Profile', params:{ userId: comment.User.id}}" >
+              <img class="user_profile-picture" :src="comment.User.imageUrl" alt="" />
+              </router-link>
             </div>
             <div class="comment">
               <p v-if="modificationInput != comment.id " class="comment-content">{{ comment.content }}</p>
@@ -62,7 +69,7 @@
                 <img class="user_profile-picture" :src="userInfos.imageUrl" alt="" />
                 <div class="sendbox-comment">
                 <textarea v-model="content" type="text-content" class="post-comment_container" placeholder="Votre commentaire..."/>
-                <button @click="addComment(publication.id, publication.userId)" class="comment-btn" >
+                <button @click="addComment(publication.id)" class="comment-btn" >
                   <img class="comment-send" src="../assets/send.png" alt="" />
                 </button>
               </div>
@@ -150,6 +157,7 @@ export default {
       image: null,
       count: null,
       content: "",
+      likesCount:0,
       currentPublication: {},
       currentComment:{},
     };
@@ -198,11 +206,20 @@ export default {
         currentPublication.id,
       ]);
     },
-    addComment(id, userId) {
+    addLike(id){
+      const user = this.userInfos
+      this.$store.dispatch('addLikes',{
+        userId: user.id,
+        publicationId: id,
+        like : 1
+      })
+
+    },
+    addComment(id) {
       this.$store
         .dispatch("addComment", {
           id: id,
-          userId: userId,
+          userId: this.userInfos.id,
           content: this.content,
         })
         .then(
@@ -231,11 +248,15 @@ export default {
       this.modificationInput = null;
     },
     deleteComment(comment){
+      const user = this.userInfos
       console.log(comment)
+      console.log(user)
     this.$store
         .dispatch("deleteComment", {
+          userId: user.id,
+          isAdmin: user.isAdmin,
           id: comment.id,
-          userId: comment.userId,
+          commentUserId: comment.userId,
           publicationId:comment.publicationId,
         })
         .then(function (error) {
@@ -244,10 +265,13 @@ export default {
         );
     },
     deletePublication(id, userId) {
+      const user = this.userInfos
       this.$store
         .dispatch("deletePublication", {
           id: id,
-          userId: userId,
+          publicationUserId: userId,
+          userId: user.id,
+          isAdmin: user.isAdmin
         })
         .then(function (error) {
             console.log(error);
@@ -272,6 +296,10 @@ export default {
   align-items: center;
   width: 100%;
 }
+.publication-text{
+  padding:1.5rem;
+  margin:0;
+}
 .publication-card {
   position: relative;
   width: 50%;
@@ -287,8 +315,19 @@ export default {
 .modif-icon{
   position: absolute;
   top:1rem;
-  right:10px;
+  right:1rem;
   width: 1rem;
+}
+.editMenu{
+  position: absolute;
+  align-items: flex-end;
+  top:1.5rem;
+  right:5px;
+  width: 30%;
+  text-align: center;
+  border: 1px soli #d3d3d3;
+  box-shadow: 5px 5px 5px #d3d3d3;
+
 }
 button {
   appearance: none;
@@ -395,7 +434,9 @@ a {
 .interactions-count {
   display: flex;
   justify-content: space-around;
+  align-items: center;
   width: 100%;
+  height: 3rem;
   border-top: 1px solid #d3d3d3;
   border-bottom: 1px solid #d3d3d3;
 }
@@ -467,8 +508,12 @@ a {
   height: 1rem;
 }
 .like {
-  width: 15px;
-  height: 15px;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+}
+.comments-btn{
+  cursor: pointer;
 }
 .count-number {
   margin: 0 5px;

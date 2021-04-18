@@ -23,7 +23,11 @@ module.exports = {
     getOneComment : function(req, res){
         const id = req.params.id;
         const publicationId = req.params.id;
-        models.Comment.findOne({where: {publicationId: publicationId, id : id}}).then(result => {
+        models.Comment.findOne({
+            where:
+             {publicationId: publicationId, id : id},
+             include: {model:models.User}
+        }).then(result => {
             if(result){
                 res.status(200).json(result);
             }else{
@@ -40,9 +44,9 @@ module.exports = {
     getAllComments: function(req, res){
         const options = {
             where: {publicationId: req.params.publicationId},
-            order:['createdAt']
+            include:{model:models.User} 
         }
-        models.Comment.findAll(options).then(result => {
+        models.Comment.findAndCountAll(options).then(result => {
             res.status(200).json(result);
         }) .catch(error => {
             res.status(500).json({
@@ -70,10 +74,24 @@ module.exports = {
         });
     })
     },
-    destroyComment: function(req, res){
-        const id = req.params.id; 
-        const publicationId = req.params.publicationId;
+    deleteComment: function(req, res){
+        const id = req.params.id;
+        const userId = req.body.userId;
+        const publicationId = req.body.publicationId;
+        const idToDelete = req.body.commentUserId
+      if (!userId || !idToDelete) {
+        res.status(401).json({message: "request invalid"});
+        return;
+      }
 
+      // Is authorized
+      let allowed = req.body.isAdmin;
+      if (userId == idToDelete) allowed = true
+      if (!allowed) {
+        res.status(401).json({message: "not allowed"})
+        return;
+      }
+        
         models.Comment.destroy({where: {id: id, publicationId: publicationId}})
         .then(result => {
             res.status(200).json({

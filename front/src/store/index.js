@@ -1,67 +1,57 @@
 import { createStore } from 'vuex'
-
-
 const axios = require('axios');
 
+
 let instance = axios.create({
-  baseURL: 'http://localhost:3000/api/'
+  baseURL: 'http://localhost:3000/api/',
 });
 
 let user = localStorage.getItem('user');
 if (!user) {
-  user = {
+ user = {
     userId: -1,
     token: '',
-  };
+  }; 
 } else {
   try {
     user = JSON.parse(user);
-    if (!user || !user.token) {
-      user = {
-        userId: -1,
-        token: '',
-      };
-    } else {
-      // TODO validate token
-      instance = axios.create({
-        baseURL: 'http://localhost:3000/api/',
-        headers: { 'Authorization': "bearer " + user.token}
-      });
-    }
+    instance.defaults.headers.common['Authorization'] = `Bearer ${user.token}`;
   } catch (ex) {
     user = {
       userId: -1,
-      token: "",
+      token: '',
     };
   }
 }
+
+
 const store = createStore({
   state: {
     status: '',
     user: user,
     userInfos: {},
     publications: [],
-    comments: []
+    comments: [],
+    likes:[],
   },
   mutations: {
     SET_STATUS: function (state, status) {
       state.status = status;
     },
     LOG_USER: function (state, user) {
-      instance = axios.create({
-        baseURL: 'http://localhost:3000/api/',
-        headers: { 'Authorization':  'Bearer '+ user.token}
-      });
+      instance.defaults.headers.common['Authorization'] = `Bearer ${user.token}`;
       localStorage.setItem('user', JSON.stringify(user));
       state.user = user;
+      console.log(user)
     },
     USER_INFOS: function (state, userInfos) {
       state.userInfos = userInfos;
+      console.log(userInfos)
     },
     SET_USER: function (state, newInfos) {
       state.userInfos = newInfos;
-      console.log(newInfos);
     },
+
     LOG_OUT: function (state) {
       state.user = {
         userId: -1,
@@ -83,11 +73,13 @@ const store = createStore({
       state.publications = [...state.publications]
     },
     DELETE_PUBLICATION: function (state, publication) {
-      const index = state.publications.findIndex(p => p.id === publication.id && publication.userId === user.id);
-
+      if (state.userInfos.id === publication.userId || state.userInfos.isAdmin == true){
+      const index = state.publications.findIndex(p => p.id 
+        === publication.id );
       if (index !== -1) {
         state.publications.splice(index, 1);
       }
+    }
     },
     COMMENTS_LIST: function (state, comments) {
       state.comments = comments;
@@ -96,16 +88,21 @@ const store = createStore({
     ADD_COMMENT: function (state, newComment) {
       state.comments.unshift(newComment);
     },
-    UPDATE_COMMENT:function (state, modifiedComment) {
+    UPDATE_COMMENT: function (state, modifiedComment) {
       const commentIndex = state.comments.findIndex(
         p => p.id === modifiedComment.id)
       state.comments[commentIndex] = modifiedComment
     },
     DELETE_COMMENT: function (state, comment) {
+      if (state.userInfos.id === comment.userId || state.userInfos.isAdmin == true){
       const index = state.comments.findIndex(c => c.id === comment.id);
       if (index !== -1) {
         state.comments.splice(index, 1);
       }
+    }
+    },
+    ADD_LIKES: function (state, likes){
+      state.likes = likes
     }
   },
   actions: {
@@ -115,9 +112,11 @@ const store = createStore({
         instance.post('users/login', userInfos)
           .then(function (response) {
             commit('SET_STATUS', '');
-            console.log(response.data)
+            if(response.data.token){
+            localStorage.setItem('token', response.data.token);
             commit('LOG_USER', response.data);
             resolve(response);
+          }
           })
           .catch(function (error) {
             commit('SET_STATUS', 'error_login');
@@ -139,16 +138,17 @@ const store = createStore({
           });
       });
     },
-    getUserInfos: ({commit, state}) => {
+    getUserInfos: ({ commit, state }) => {
       instance.get(`users/${state.user.user}`)
         .then(function (response) {
+          console.log(response)
           commit('USER_INFOS', response.data);
         })
         .catch(function (error) {
           console.log(error);
         });
     },
-    getAllUsers: ({commit}) => {
+    getAllUsers: ({ commit }) => {
       instance.get('users/all')
         .then(function (response) {
           console.log(response.data)
@@ -157,20 +157,57 @@ const store = createStore({
         .catch(function (error) {
           console.log(error);
         });
-      },
+    },
     editUser: ({ state, commit }, file) => {
-      instance.put(`users/${state.user.id}`, file, { headers: { 'Content-Type': 'multipart/form-data' } })
+      instance.put(`users/${state.user.user}`, file,
+      {'Content-Type' : 'application/form-data'})
         .then(response => {
           console.log(response.data)
-          commit('SET_USER', response)
+          commit('SET_USER', file)
           window.location.reload();
         })
         .catch(error => {
           console.log({ error: error })
         });
     },
+    editUserBio: ({ state, commit },bio) => {
+      instance.put(`users/${state.user.user}`, bio,
+      {'Content-Type' : 'application/form-data'})
+        .then(response => {
+          console.log(response.data)
+          commit('SET_USER', bio)
+          window.location.reload();
+        })
+        .catch(error => {
+          console.log({ error: error })
+        });
+    },
+    editUserOverlay: ({ state, commit }, file) => {
+      instance.put(`users/${state.user.user}/overlay`, file,
+      {'Content-Type' : 'application/form-data'})
+        .then(response => {
+          console.log(response.data)
+          commit('SET_USER', file)
+          //window.location.reload();
+        })
+        .catch(error => {
+          console.log({ error: error })
+        });
+      },
+    deleteAccount({ commit }, account) {
+      let logOff = account.id == account.userId;
+      instance.delete(`users/${account.id}`, { data : account})
+        .then((response) => {
+          console.log(response)
+          if (logOff) commit('LOG_OUT', account)
+          window.location.reload();
+        })
+        .catch(error => {
+          console.log({ error: error })
+        })
+    },
     getPublications: ({ commit }) => {
-      instance.get('publications/all')
+       instance.get('publications/all')
         .then(function (response) {
           console.log(response.data)
           commit('PUBLICATIONS_LIST', response.data);
@@ -180,8 +217,9 @@ const store = createStore({
         });
     },
     addPublication({ commit }, file) {
-      instance.post('publications/add', file, { headers: { 'Content-Type': 'multipart/form-data' } })
-        .then(response => {
+      instance.post('publications/add', file,
+      {'Content-Type' : 'application/form-data'})
+        .then(function (response) {
           console.log(response.data)
           commit('ADD_PUBLICATION', response.data);
           window.location.reload();
@@ -191,7 +229,8 @@ const store = createStore({
         })
     },
     UpdatePublication({ commit }, data) {
-      instance.put(`publications/${data[1]}`, data[0], { headers: { 'Content-Type': 'multipart/form-data' } })
+      instance.put(`publications/${data[1]}`, data[0],
+      {'Content-Type' : 'application/form-data'})
         .then(response => {
           console.log(response)
           commit('UPDATE_PUBLICATION', data[0])
@@ -202,7 +241,7 @@ const store = createStore({
         })
     },
     deletePublication({ commit }, publication) {
-      instance.delete('publications/' + publication.id)
+      instance.delete(`publications/${publication.id}`, { data : publication})
         .then((response) => {
           console.log(response)
           commit('DELETE_PUBLICATION', publication);
@@ -221,18 +260,18 @@ const store = createStore({
         })
     },
     addComment({ commit }, comment) {
-      instance.post(`publications/${comment.publicationId}/comments`, comment)
+      instance.post(`publications/${comment.id}/comments`,comment)
         .then(function (response) {
           console.log(response)
-          commit('ADD_COMMENT', response)
+          commit('ADD_COMMENT', comment)
           window.location.reload();
         })
         .catch(error => {
           console.log({ error: error })
         })
     },
-    updateComment({commit},comment){
-    instance.put(`publications/${comment.publicationId}/comments/${comment.id}`, comment)
+    updateComment({ commit }, comment) {
+      instance.put(`publications/${comment.publicationId}/comments/${comment.id}`, comment)
         .then(response => {
           console.log(response)
           commit('UPDATE_COMMENT', comment)
@@ -242,16 +281,27 @@ const store = createStore({
           console.log({ error: error })
         })
     },
-    deleteComment({ commit}, comment) {
-      instance.delete(`publications/${comment.publicationId}/comments/${comment.id}`)
-        .then((response) => { 
+    deleteComment({ commit }, comment) {
+      instance.delete(`publications/${comment.publicationId}/comments/${comment.id}`, { data : comment})
+        .then((response) => {
           console.log(response)
-          commit('DELETE_PUBLICATION', comment)
+          commit('DELETE_COMMENT', comment)
           window.location.reload();
         })
         .catch(error => {
           console.log({ error: error })
         })
+    },
+    addLikes({commit}, publication,like){
+      instance.post(`publications/${publication.id}/like`,{data : like})
+      .then((response) => {
+        console.log(response)
+        commit('ADD_LIKES', like)
+        window.location.reload();
+      })
+      .catch(error => {
+        console.log({ error: error })
+      })
     }
   }
 })

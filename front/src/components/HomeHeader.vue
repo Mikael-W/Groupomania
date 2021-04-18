@@ -1,24 +1,17 @@
 <template>
 <div class="layout">
 <header>
-      <div class="search-wrapper">
-      <input class="search-input" type="text" placeholder="Rechercher des collègues"/>
-      <img class="searchlogo" src="../assets/search.png" alt="">
-    </div>
+  <div class="user-side_profile">
+          <div class="user-profile_container">
+            <router-link class="user-name" to="/Profile">{{userInfos.firstname}}</router-link>
+            <img class="user_profile-pict" :src="userInfos.imageUrl" alt="">
+          </div>
+  </div>
     <router-link to="/Home"><img class="logo" alt="Groupomania logo" src="../assets/logoheader.png"></router-link>
-    <div class="user_side">
-      <div class="notiflogoborder">
-        <span class="notif-count">0</span>
-        <img class="user_side-logonotif" src="../assets/notification.png" alt="">
-      </div>
-      <div class="user-side_profile">
-        <div class="user-profile_container">
-         <router-link class="user-name" to="/Profile">{{userInfos.firstname}}</router-link>
-        <img class="user_profile-pict" :src="userInfos.imageUrl" alt="">
-        </div>
+
+      <div class="user-logout_profile">
         <button class="logout-Btn" @click="logout()"><img class="sign-out_icon" src="../assets/log-out.png" alt=""></button>
       </div>
-    </div>
 </header>
 </div>
 </template>
@@ -52,8 +45,8 @@ export default {
 
 <style>
 header{
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
   justify-items: center;
   width: 100vw;
@@ -64,6 +57,7 @@ a{
 }
 .logo{
   padding: 1rem;
+  margin-right:7.5rem;
   background: #042a5f;
 }
 .search-wrapper{
@@ -124,15 +118,18 @@ input{
   border-radius:50%;
   margin-left: 1.5rem;
 }
-.user-side_profile{
+.user-logout_profile{
   display: flex;
   align-items: center;
+}
+.user-side_profile{
+  padding-left:1.5rem;
 }
 .user-profile_container{
   border-radius: 25px;
   background: white;
   border: 1px solid white;
-  padding: 0;;
+  margin-left: 1.5rm;
   display: flex;
   align-items: center;
 }
@@ -143,7 +140,7 @@ input{
 }
 .sign-out_icon{
   width: 3vw;
-  margin-left:10px;
+  margin-right:1.5rem;
 }
 .logout-Btn{
   display: flex;
@@ -174,8 +171,8 @@ input{
   align-items: center;
 }
 .user_profile-picture{
-  width:40px;
-  height:40px;
+  width:3rem;
+  height:3rem;
   border:1px solid black;
   margin: 1rem;
   border-radius:50%;

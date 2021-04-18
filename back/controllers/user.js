@@ -69,7 +69,7 @@ module.exports = {
             jwt.sign({
               email: user.email,
               userId: user.id
-            }, "b4a511c47aed6c79a6f28066fa8eb09cf88a5b43", function (err, token) {
+            }, process.env.SKT ||"le super projet groupomania", function (err, token) {
               res.status(200).json({
                 'user': user.id,
                 'token': token
@@ -140,10 +140,36 @@ module.exports = {
         });
       }).catch(error => {
         res.status(200).json({
-          message: "Somenthing went wrong",
+          message: "Something went wrong",
           error: result
         });
       })
+  },
+  deleteAccount: async function(req, res){
+    try{
+      // Read
+      const userId = req.body.userId;
+      const idToDelete = req.params.id
+      if (!userId || !idToDelete) {
+        res.status(401).json({message: "request invalid"});
+        return;
+      }
+
+      // Is authorized
+      let allowed = req.body.isAdmin;
+      if (userId == idToDelete) allowed = true;
+      if (!allowed) {
+        res.status(401).json({message: "not allowed"})
+        return;
+      }
+      
+      // Destroy
+      let user = await models.User.findOne({where:{id: idToDelete}});
+      user.destroy()
+      res.statuts(200).json({message: "compte supprimé"})
+    }catch (error){
+      res.status(400).json({error})
+    }
   }
 };
 
