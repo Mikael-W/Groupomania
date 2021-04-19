@@ -26,8 +26,10 @@ module.exports = {
     getOnePublication: function (req, res) {
         const id = req.params.id;
         models.Publication.findOne({
+            include:{
             where:{id: id},
-            include:{model:models.User} 
+            model:models.User
+        } 
         }).then(result => {
             res.status(200).json(result);
         }).catch(error => {
@@ -39,9 +41,9 @@ module.exports = {
 
     getAllPublication: function (req, res) {
         models.Publication.findAll({
-            order:[
-                 'id desc'
-            ],
+           order:[[
+                'createdAt', 'DESC'
+           ]],
             include:{
                 model:models.User,
             }}).then(result => {

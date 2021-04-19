@@ -3,7 +3,7 @@
     <div class="publicationbox-layout">
         <div class="user_publication-container">
             <div class="user_pict-link">
-            <img class="user_profile-picture" :src="userInfos.imageUrl"  alt="">
+            <img class="user_profile-picture" :src="userInfos.imageUrl"  alt="photo de profil utilisateur">
             <div @click="publishModal = true" class="postlink-container" role="button">Que voulez vous dire, {{userInfos.firstname}} ?</div>
             </div>
         </div>
@@ -13,15 +13,15 @@
         <div class="overlay"></div>
           <div class="userProfile">
               <div class="user_pict-link">
-            <img class="user_profile-picture" :src="userInfos.imageUrl"  alt="">
+            <img class="user_profile-picture" :src="userInfos.imageUrl"  alt="photo de profil utilisateur">
             <div> {{userInfos.firstname}} {{userInfos.lastname}}</div>
             </div>
             <button @click="publishModal=false" class="closemodalbtn">X</button>
-            <form @submit.prevent="submitPublication" class="signup-form">
+            <form @submit.prevent="submitPublication" class="send-publication_form">
             <textarea v-model="content" class="text-content" type="text-area" placeholder="Que voulez vous dire?" />
-            <div class="file-preview"><img class="file-preview_image" v-if="image" :src="image" alt=""></div>
+            <div class="publication-preview"><img class="publication-preview_image" v-if="image" :src="image" alt="image avant publication"></div>
             <div class="action-container_btn">
-            <button @click="onPickFile" class="upload-btn">Choisir un fichier<img class="upload-icon" src="../assets/image-gallery.png" alt=""/></button>
+            <button @click="onPickFile" class="upload-btn">Choisir un fichier<img class="upload-icon" src="../assets/image-gallery.png" alt="icon de chargement d'image"/></button>
             <input class="file-upload_bnt" type="file" ref="fileInput" accept="image/*" @change="onFilePicked"/>
             <button @click="addPublication()" class="publish-btn">Publier<img class="publish-icon" src="../assets/send.png" alt=""></button>
             </div>
@@ -90,18 +90,28 @@ export default {
     border: none;
     resize: vertical;
     outline: unset;
+    text-indent: 1rem;
+    font-size: 1rem;
+    font-family: poppins, sans-serif;
 }
-.file-preview{
+.send-publication_form{
+  max-height:40vh;
+}
+.publication-preview{
     width:95%;
-    height: auto;
+    height:100%;
 }
-.file-preview_image{
-    width:100%;
+.publication-preview_image{
+    width:50vw;
+    height: 30vh;
+
 }
 .action-container_btn{
     display: flex;
 }
 .upload-btn, .publish-btn{
+    position: absolute;
+    bottom:0;
     display: flex;
     align-items: center;
     background: white;
@@ -111,6 +121,9 @@ export default {
     border-color: grey;
     border-style: solid;
     padding: 10px 0;
+}
+.publish-btn{
+  right:0;
 }
 .file-upload_bnt{
     display:none;
@@ -162,22 +175,18 @@ export default {
   align-items: center;
   width: 100%;
 }
-.text-content {
-  width: 95%;
-  border: none;
-  resize: vertical;
-}
 .current-publication_picture {
   width: 95%;
   height: auto;
 }
 .file-preview {
-  max-width:95%;
+  max-width:100%;
   height: auto;
-  max-height: 500px;
+  max-height: 50vh;
 }
 .file-preview_image {
   width: 100%;
+  max-height:50vh;
 }
 .upload-btn,
 .publish-btn {
@@ -203,6 +212,23 @@ export default {
   flex-direction: column;
   align-items: center;
   width: 100%;
+}
+.closemodalbtn{
+  position: absolute;
+  top:1rem;
+  right:1rem;
+  appearance: none; 
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+@media screen and (max-width: 767px) {
+  .SP-layout, .user_publication-container{
+    width: 100vw;
+  }
+  .publication-modal, .user-signup{
+    width:100vw;
+  }
 }
 </style>>
 

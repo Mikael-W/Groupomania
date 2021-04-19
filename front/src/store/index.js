@@ -31,7 +31,7 @@ const store = createStore({
     user: user,
     userInfos: {},
     publications: [],
-    comments: [],
+    comments:[],
     likes:[],
   },
   mutations: {
@@ -46,12 +46,10 @@ const store = createStore({
     },
     USER_INFOS: function (state, userInfos) {
       state.userInfos = userInfos;
-      console.log(userInfos)
     },
     SET_USER: function (state, newInfos) {
       state.userInfos = newInfos;
     },
-
     LOG_OUT: function (state) {
       state.user = {
         userId: -1,
@@ -61,7 +59,6 @@ const store = createStore({
     },
     PUBLICATIONS_LIST: function (state, publications) {
       state.publications = publications;
-      console.log(publications)
     },
     ADD_PUBLICATION: function (state, newPublication) {
       state.publications.unshift(newPublication);
@@ -83,7 +80,6 @@ const store = createStore({
     },
     COMMENTS_LIST: function (state, comments) {
       state.comments = comments;
-      console.log(comments);
     },
     ADD_COMMENT: function (state, newComment) {
       state.comments.push(newComment);
@@ -101,8 +97,11 @@ const store = createStore({
       }
     }
     },
-    ADD_LIKES: function (state, likes){
-      state.likes = likes
+    ADD_LIKES: function(state, newlike){
+      state.likes.push(newlike)
+    },
+    GET_LIKES: function(state, likeList){
+    state.likes = likeList;
     }
   },
   actions: {
@@ -141,15 +140,14 @@ const store = createStore({
     getUserInfos: ({ commit, state }) => {
       instance.get(`users/${state.user.user}`)
         .then(function (response) {
-          console.log(response)
           commit('USER_INFOS', response.data);
         })
         .catch(function (error) {
           console.log(error);
         });
     },
-    getAllUsers: ({ commit }) => {
-      instance.get('users/all')
+    getUserProfile: ({ commit}, userProfile) => {
+      instance.get(`users/`,{data : userProfile})
         .then(function (response) {
           console.log(response.data)
           commit('USER_INFOS', response.data);
@@ -171,7 +169,7 @@ const store = createStore({
         });
     },
     editUserBio: ({ state, commit },bio) => {
-      instance.put(`users/${state.user.user}`, bio,
+      instance.put(`users/${state.user.user}`, {data : bio},
       {'Content-Type' : 'application/form-data'})
         .then(response => {
           console.log(response.data)
@@ -209,7 +207,6 @@ const store = createStore({
     getPublications: ({ commit }) => {
        instance.get('publications/all')
         .then(function (response) {
-          console.log(response.data)
           commit('PUBLICATIONS_LIST', response.data);
         })
         .catch(function (response) {
@@ -254,6 +251,7 @@ const store = createStore({
     getPublicationComments({ commit }, publication) {
       instance.get(`publications/${publication.id}/comments`)
         .then(function (response) {
+          console.log(response)
           commit('COMMENTS_LIST', response.data)
         }).catch(error => {
           console.log({ error: error })
@@ -293,15 +291,22 @@ const store = createStore({
           console.log({ error: error })
         })
     },
-    addLikes({commit}, publication,like){
-      instance.post(`publications/${publication.id}/like`,{data : like})
+    addLikes({commit}, like){
+      instance.post(`publications/${like.publicationId}/like`,like,
+      {'Content-Type' : 'application/form-data'})
       .then((response) => {
-        console.log(response)
+        console.log(response.data)
         commit('ADD_LIKES', like)
-        window.location.reload();
       })
       .catch(error => {
         console.log({ error: error })
+      })
+    },
+    getLikesList({commit}, publication){
+      instance.get(`publications/${publication.id}/likes`)
+      .then((response)=>{
+      console.log(response.data)
+      commit('GET_LIKES', response.data)
       })
     }
   }

@@ -22,6 +22,11 @@ const routes = [
     name: 'Profile',
     component: () => import('../views/Profile.vue'),
     props: true,
+  },
+  {
+    path: '/Profile/:userId',
+    name: 'UserProfile',
+    component: () => import('../views/userProfile.vue')
   }
 ]
 

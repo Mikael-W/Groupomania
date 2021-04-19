@@ -2,22 +2,22 @@
   <div class="connexion-layout">
     <div class="rightlogintitle">
       <img src="../assets/logoheader.png" alt="groupomamia logo" />
-      <span class="slogan">L'application qui rapproche les collaborateurs</span>
+      <span class="slogan" aria-label="label">L'application qui rapproche les collaborateurs</span>
     </div>
     <div class="userlog">
-      <input v-model="email" type="email" placeholder="Email" />
-      <input v-model="password" type="password" placeholder="Mot de passe" />
+      <input v-model="email" type="email" placeholder="Email" aria-label="email"  />
+      <input v-model="password" type="password" placeholder="Mot de passe" aria-label="password" />
       <div class="form-row" v-if=" status == 'error_login'">
         Adresse mail et/ou mot de passe invalide
       </div>
       <button @click="login()" class="logbtn">Connexion</button>
       <span>Pas encore inscrit ?</span>
-      <button @click="signupModal = true" class="signup-front-btn">Créer un compte</button>
+      <button @click="signupModal = true" class="signup-front-btn" aria-label="button">Créer un compte</button>
     </div>
     <teleport to="#modals">
       <div v-if="signupModal" class="Signup-modal">
         <div class="overlay"></div>
-          <div class="userSignup">
+          <div class="user-signup">
             <div class="signup-title">
             <h1>S'inscrire</h1>
             <p>C'est facile et rapide !</p>
@@ -28,10 +28,10 @@
             <input v-model="firstname" class="fname" type="text" placeholder="Prénom" />
             <input v-model="lastname" class="lname" type="text" placeholder="Nom de famille" />
             </div>
-            <input v-model="email" type="Email" placeholder="Email" />
-            <input v-model="password" type="password" placeholder="Mot de passe"/>
+            <input v-model="email" type="Email" placeholder="Email" aria-label="email" />
+            <input v-model="password" type="password" placeholder="Mot de passe" aria-label="password"/>
             <div class="form-row" v-if=" status == 'error_create'">
-            Adresse mail déjà existante
+            Adresse mail incorrect
             </div>
             <button @click="createAccount()" class="signup-btn">S'incrire</button>
             </div>
@@ -108,17 +108,21 @@ export default {
 .rightlogintitle {
   grid-column-start: 1;
   display: flex;
+  align-items: center;
+  text-align: center;
   flex-direction: column;
   width: 40vw;
   height: 50vh;
   margin: 5vh 0;
+  background: #042a5f;
 }
 .slogan{
-  font-size: 1.3rem;
-  color: #042a5f;
-  margin: 1.5rem;
+  font-size: 2rem;
+  color: white;
+  margin: 3rem 1.5rem 0 1.5rem;
 }
 img {
+  margin-top: 1rem;
   width: 80%;
 }
 h1 {
@@ -170,7 +174,7 @@ input {
   height: 6vh;
   font-size: 100%;
   margin: 3vh 0;
-  background: #118c33;
+  background: #2c661f;
   border-radius: 6px;
   color: white;
   font-weight: bold;
@@ -186,6 +190,7 @@ input {
   color: #042a5f;
   font-weight: bold;
   font-size:1rem;
+  cursor: pointer;
 }
 a {
   text-decoration: none;
@@ -210,7 +215,7 @@ a {
   left:0;
   right:0;
 }
-.userSignup {
+.user-signup{
   z-index: 1;
   position: relative;
   width: 50vw;
@@ -257,5 +262,18 @@ footer{
 }
 .rl-color{
   color:white;
+}
+@media screen and (max-width: 767px) {
+  .connexion-layout{
+    display: flex;
+    flex-direction: column;
+  }
+  .rightlogintitle, .userlog{
+    width: 100vw;
+    padding-top: 1.5rem;
+  }
+  .user-signup{
+    width: 100vw;
+  }
 }
 </style>

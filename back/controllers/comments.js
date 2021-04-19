@@ -24,9 +24,10 @@ module.exports = {
         const id = req.params.id;
         const publicationId = req.params.id;
         models.Comment.findOne({
-            where:
-             {publicationId: publicationId, id : id},
-             include: {model:models.User}
+            include:{
+            where:{publicationId: publicationId, id : id},
+            model:models.User
+            }
         }).then(result => {
             if(result){
                 res.status(200).json(result);
@@ -42,11 +43,12 @@ module.exports = {
         });
     },
     getAllComments: function(req, res){
-        const options = {
+        models.Comment.findAll({
             where: {publicationId: req.params.publicationId},
-            include:{model:models.User} 
-        }
-        models.Comment.findAndCountAll(options).then(result => {
+            include:{
+            model: models.User, 
+            }
+        }).then(result => {
             res.status(200).json(result);
         }) .catch(error => {
             res.status(500).json({

@@ -4,13 +4,13 @@
           <div  v-for="publication in publications"  :key="publication.id"  class="publication-card">
             <div class="profile-publication">
           <router-link class="user-name" :to="{ name: 'Profile', params:{userId: publication.User.id}}">
-          <img class="user_profile-picture" :src="publication.User.imageUrl" alt="" />
+          <img class="user_profile-picture" :src="publication.User.imageUrl" alt="profil utilisateur " />
           </router-link>
           <router-link class="user-name" :to="{ name: 'Profile', params:{userId: publication.User.id}}">
           <span>{{publication.User.firstname}} {{publication.User.lastname}}</span>
           </router-link>
           <button @click="editMenu = true">
-            <img class="modif-icon" src="../assets/points.png" alt="" />
+            <img class="modif-icon" src="../assets/points.png" alt="bouton modification publication" />
           </button>
           <div v-show="editMenu" class="editMenu">
             <button
@@ -30,24 +30,24 @@
         <div class="publication-content">
             <p class="publication-text">{{ publication.content }}</p>
         </div>
-        <img class="timeline-picture" :src="publication.imageUrl" alt="" />
+        <img class="timeline-picture" :src="publication.imageUrl" alt="image de la publication" />
         <div class="interactions-count">
             <div class="likes-count">
-            <img @click="addLike(publication.id)" v-if="likesCount >= 1" class="like" src="../assets/like.png" aria-labelly="button" alt="" />
-            <img @click="addLike(publication.id)" v-if="likeCount == 0" class="like" src="../assets/likew.png" aria-labelly="button" alt="" />
-            <span class="likes-count">{{likesCount == publication.id}}</span>
+            <img @click="addLike(publication.id)"  class="like" src="../assets/like.png" aria-labelly="button" alt="bouton de like" />
+            <img @click="addLike(publication.id)" v-if="likes.length < 1 || likes.userId != userInfos.id" class="like" src="../assets/likew.png" aria-labelly="button" alt="bouton de like" />
+            <span v-for="like in likes" :key="like.id" class="likes-count">{{likes.length}}</span>
             </div>
-            <div class="comments-count">
-                  <span class="count-number">{{ comments.count }}</span>
+            <div   class="comments-count">
+                  <span v-for="comment in comments" :key="comment.id" class="count-number">{{comments.length}}</span>
                   <span class="comments-btn" @click="getAllcomments(publication.id),  (commentsContainer = publication.id)"  >commentaires</span>
                   </div>
             </div>
         <div  v-if="commentsContainer == publication.id" class="comments-container">
             <div  class="comments-card"  v-for="comment in comments"  :key="comment.id">
               <div class="user_pict-link">
-              <router-link :to="{ name: 'Profile', params:{ userId: comment.User.id}}" >
-              <img class="user_profile-picture" :src="comment.User.imageUrl" alt="" />
-              </router-link>
+            
+              <img class="user_profile-picture"  alt="photo profil de publication" />
+            
             </div>
             <div class="comment">
               <p v-if="modificationInput != comment.id " class="comment-content">{{ comment.content }}</p>
@@ -56,7 +56,7 @@
             </div>
             <div class="comment-action_box">
             <button @click="(editCommentId = comment.id)"> 
-            <img class="comment-modification_img" src="../assets/points.png" alt="" />
+            <img class="comment-modification_img" src="../assets/points.png" alt="menu modification commentaire" />
             </button>
             <div class="edit-comment_menu" v-show="editCommentId == comment.id">
                 <button @click="displayModificationComment(comment), (modificationInput = comment.id),(editCommentId = null)">Modifier</button>
@@ -70,7 +70,7 @@
                 <div class="sendbox-comment">
                 <textarea v-model="content" type="text-content" class="post-comment_container" placeholder="Votre commentaire..."/>
                 <button @click="addComment(publication.id)" class="comment-btn" >
-                  <img class="comment-send" src="../assets/send.png" alt="" />
+                  <img class="comment-send" src="../assets/send.png" alt="bouton d'envoi commentaire" aria-label="button" />
                 </button>
               </div>
             </div>
@@ -83,7 +83,7 @@
         <div class="overlay"></div>
         <div class="userProfile">
           <div class="user_pict-link">
-            <img class="user_profile-picture" :src="userInfos.imageUrl" alt="" />
+            <img class="user_profile-picture" :src="userInfos.imageUrl" alt="profil utilisateur " />
             <span>Modifier la publication</span>
           </div>
           <button @click="editModal = false" class="closemodalbtn">X</button>
@@ -114,7 +114,7 @@
                 Photo<img
                   class="upload-icon"
                   src="../assets/image-gallery.png"
-                  alt=""
+                  alt="button upload image"
                 />
               </button>
               <input
@@ -131,7 +131,7 @@
                 Enregistrer<img
                   class="publish-icon"
                   src="../assets/send.png"
-                  alt=""
+                  alt="bouton engistrer la publication"
                 />
               </button>
             </div>
@@ -143,7 +143,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapState } from "vuex";
 
 export default {
   name: "Timeline",
@@ -155,9 +155,7 @@ export default {
       modificationInput:null,
       commentsContainer: null,
       image: null,
-      count: null,
       content: "",
-      likesCount:0,
       currentPublication: {},
       currentComment:{},
     };
@@ -169,11 +167,12 @@ export default {
   },
   computed: {
     ...mapState({
+      user: 'user',
       userInfos:"userInfos",
-      publications: ["publications"],
-      comments: ["comments"],
+      likes: ['likes'],
+      publications:['publications'],
+      comments: ['comments'],
     }),
-    ...mapActions(["getAllUsers","getUserInfos"]),
   },
   methods: {
     onPickFile() {
@@ -213,7 +212,8 @@ export default {
         publicationId: id,
         like : 1
       })
-
+      .then((response)=>
+      console.log(response));
     },
     addComment(id) {
       this.$store
@@ -477,10 +477,13 @@ a {
 }
 .post-comment_container {
   width: 35vw;
-  height: 5vh;
+  height: 3.5vh;
+  font-family: poppins, sans-serif;
+  padding: 8px;
+  font-size: 1rem;
   border-radius: 8px;
   background: #d3d3d3;
-  text-indent: 10px;
+  text-indent: 1rem;
 }
 .sendbox-border {
   align-self: center;
@@ -504,8 +507,8 @@ a {
   right: 10px;
 }
 .comment-send {
-  width: 1rem;
-  height: 1rem;
+  width: 2rem;
+  height: 2rem;
 }
 .like {
   width: 2rem;
@@ -517,5 +520,13 @@ a {
 }
 .count-number {
   margin: 0 5px;
+}
+@media screen and (max-width: 767px) {
+  .timeline-container{
+    width: 100vw;
+  }
+  .publication-card{
+    width: 100vw;
+  }
 }
 </style>

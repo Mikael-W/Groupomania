@@ -1,1 +1,8 @@
+##Environnement
 .env
+
+
+
+##classique file
+.vscode
+.DS_Store

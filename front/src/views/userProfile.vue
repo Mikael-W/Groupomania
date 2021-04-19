@@ -7,92 +7,30 @@
           <div class="user-bg_box">
             <img
               class="user-bg"
-              v-if="userOverlay == null"
-              :src="userInfos.bgUrl || '../assets/photoW.png'"
-              alt="overlay profil utlisateur"
+              :src="userProfile.bgUrl || '../assets/photoW.png'"
+              alt=""
             />
-            <div class="file-overlay_preview">
-              <img
-                class="file-overlay_picture"
-                v-if="userOverlay"
-                :src="userOverlay"
-                alt="preview overlay utilisateur"
-              />
-            </div>
-            <input
-              aria-label="button"
-              class="file-upload_bnt"
-              type="file"
-              ref="overlay"
-              accept="image/*"
-              @change="onOverlayPicked"
-            />
-            <button @click="onPickOverlay" class="edit-bg_btn">
-              <img
-                class="user-bg_edit"
-                src="../assets/photo.png"
-                alt="overlay profil utilisateur"
-              />changer la photo de couverture
-            </button>
-          </div>
           <div class="user-picture">
             <div class="user-picture_box">
               <img
                 class="user-img"
-                v-show="userAvatar == null"
-                :src="userInfos.imageUrl || '../assets/photo.png'"
-                alt="image profil utilisateur"
-              />
-              <div class="file-preview">
-                <img
-                  class="file-preview_image"
-                  v-if="userAvatar"
-                  :src="userAvatar"
-                  alt="preview photo profil utilisateur"
-                />
-              </div>
-              <button @click="onPickAvatar" class="edit-picture_btn">
-                <img class="user-img_edit" src="../assets/photo.png" alt="bouton upload image" />
-              </button>
-              <input
-                class="file-upload_bnt"
-                aria-label="button"
-                type="file"
-                ref="avatar"
-                accept="image/*"
-                @change="onAvatarPicked"
+                :src="userProfile.imageUrl || '../assets/photo.png'"
               />
             </div>
           </div>
         </div>
       </div>
       <div class="profile-data">
-        <div class="action-btn_pictures">
-            <button v-if="userOverlay != null" class="validate-profil_Btn" @click="editUserOverlay()">
-              Publier Overlay
-            </button>
-            <button v-if="userAvatar != null" class="validate-profil_Btn" @click="editUserAvatar()">
-              Publier
-            </button>
-          </div>
         <span class="user-name">
-          {{ userInfos.firstname }} {{ userInfos.lastname }}
+          {{ userProfile.firstname }} {{ userProfile.lastname }}
         </span>
         <div class="user_profile-bio">
           <div class="user-bio">
-            <span v-if="bioUi" class="bio-text">{{userInfos.bio}}</span>
-            <textarea
-              class="bio-text"
-              v-model="content"
-              v-if="modificationBio"
-            ></textarea>
-            <button class="edit-bio_btn" @click="(modificationBio == true),(bioUi == false)">
-              Modifier ma bio
-            </button>
+            <span class="bio-text">{{userProfile.bio}}</span>
           </div>
         </div>
         <button
-          v-if="userInfos.id == userInfos.id || userId == userInfos.isAdmin"
+          v-if="userId == userInfos.isAdmin"
           @click="deleteAccount()"
           class="deleteBtn"
         >
@@ -102,6 +40,7 @@
       <div class="profile-timeline"></div>
     </div>
   </div>
+  </div>
 </template>
 
 <script>
@@ -110,78 +49,26 @@ import Header from "@/components/HomeHeader.vue";
 import { mapState } from "vuex";
 
 export default {
-  name: "Profile",
+  name: "userProfile",
   data() {
     return {
-      userAvatar: null,
-      userOverlay: null,
-      modificationBio: false,
-      bioUi:true,
-      content: "",
+        userId: this.$route.params.userId,
+        userProfile:{}
     };
   },
   components: {
     Header,
   },
   mounted: function () {
-    if (this.$store.state.user.userId == -1) {
-      this.$router.push("/");
-      return;
-    }
-    this.$store.dispatch("getUserInfos");
+    this.$store.dispatch("getUserProfile")
   },
   computed: {
     ...mapState({
-      user: "user",
       userInfos: "userInfos",
-      token: "token",
+      userProfile: "userProfile"
     }),
   },
   methods: {
-    onPickAvatar() {
-      this.$refs.avatar.click();
-    },
-    onAvatarPicked(event) {
-      this.files = event.target.files[0];
-      const files = event.target.files;
-      const fileReader = new FileReader();
-      fileReader.addEventListener("load", () => {
-        this.imageUrl = fileReader.result;
-      });
-      fileReader.readAsDataURL(files[0]);
-      this.userAvatar = URL.createObjectURL(files[0]);
-    },
-    editUserAvatar() {
-      const formData = new FormData();
-      formData.append("image", this.files);
-      this.$store.dispatch("editUser", formData);
-    },
-    onPickOverlay() {
-      this.$refs.overlay.click();
-    },
-    onOverlayPicked(event) {
-      this.files = event.target.files[0];
-      const files = event.target.files;
-      const fileReader = new FileReader();
-      fileReader.addEventListener("load", () => {
-        this.imageUrl = fileReader.result;
-      });
-      fileReader.readAsDataURL(files[0]);
-      this.userOverlay = URL.createObjectURL(files[0]);
-    },
-    editUserOverlay() {
-      const formData = new FormData();
-      formData.append("overlay", this.files);
-      this.$store.dispatch("editUserOverlay", formData);
-    },
-    editBio() {
-      const user = this.userInfos;
-      this.$store.dispatch("editUserBio", {
-        image: user.imageUrl,
-        bio: JSON.stringify(this.content),
-      });
-    },
-  },
   deleteAccount() {
     const user = this.userInfos;
     this.$store
@@ -194,7 +81,8 @@ export default {
         console.log(error);
       });
   },
-};
+}
+}
 </script>
 
 <style scoped>

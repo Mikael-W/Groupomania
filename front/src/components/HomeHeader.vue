@@ -4,13 +4,15 @@
   <div class="user-side_profile">
           <div class="user-profile_container">
             <router-link class="user-name" to="/Profile">{{userInfos.firstname}}</router-link>
-            <img class="user_profile-pict" :src="userInfos.imageUrl" alt="">
+            <img class="user_profile-pict" :src="userInfos.imageUrl" alt=" photo de profil utilisateur">
           </div>
   </div>
-    <router-link to="/Home"><img class="logo" alt="Groupomania logo" src="../assets/logoheader.png"></router-link>
-
+  <div class="logo-router">
+    <router-link to="/Home"><img class="logo" alt="Groupomania logo" src="../assets/logoheader.png" aria-label="button"></router-link>
+    <router-link to="/Home"><img class="mobil-logo" alt="Groupomania logo" src="../assets/mobile_logo.png" aria-label="button"></router-link>
+  </div>
       <div class="user-logout_profile">
-        <button class="logout-Btn" @click="logout()"><img class="sign-out_icon" src="../assets/log-out.png" alt=""></button>
+        <button class="logout-Btn" @click="logout()"><img class="sign-out_icon" src="../assets/log-out.png" alt="bouton déconnexion"></button>
       </div>
 </header>
 </div>
@@ -59,6 +61,9 @@ a{
   padding: 1rem;
   margin-right:7.5rem;
   background: #042a5f;
+}
+.mobil-logo{
+  display:none;
 }
 .search-wrapper{
   position: relative;
@@ -181,9 +186,24 @@ input{
 .postlink-container{
   display:flex;
   align-items: center;
-  width:85%;
+  width:80%;
   height: 40px;
+  padding-left:1rem;
   border-radius: 1rem;
   background: #d3d3d3;
+}
+@media screen and (max-width:767px) {
+  .mobil-logo{
+    display: block;
+    width: 10vw;
+    margin-right:3rem
+  }
+  .logo{
+    display:none;
+  }
+  .sign-out_icon{
+    width: 7vw;
+    margin-right: 1.5rem;
+  }
 }
 </style>
