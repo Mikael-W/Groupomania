@@ -3,10 +3,10 @@
       <div class="publication-container">
           <div  v-for="publication in publications"  :key="publication.id"  class="publication-card">
             <div class="profile-publication">
-          <router-link class="user-name" :to="{ name: 'Profile', params:{userId: publication.User.id}}">
+          <router-link class="user-name" :to="{ name: 'userProfile', params:{userId: publication.User.id}}">
           <img class="user_profile-picture" :src="publication.User.imageUrl" alt="profil utilisateur " />
           </router-link>
-          <router-link class="user-name" :to="{ name: 'Profile', params:{userId: publication.User.id}}">
+          <router-link class="user-name" :to="{ name: 'userProfile', params:{userId: publication.User.id}}">
           <span>{{publication.User.firstname}} {{publication.User.lastname}}</span>
           </router-link>
           <button @click="editMenu = true">
@@ -33,23 +33,26 @@
         <img class="timeline-picture" :src="publication.imageUrl" alt="image de la publication" />
         <div class="interactions-count">
             <div class="likes-count">
-            <img @click="addLike(publication.id)"  class="like" src="../assets/like.png" aria-labelly="button" alt="bouton de like" />
-            <img @click="addLike(publication.id)" v-if="likes.length < 1 || likes.userId != userInfos.id" class="like" src="../assets/likew.png" aria-labelly="button" alt="bouton de like" />
-            <span v-for="like in likes" :key="like.id" class="likes-count">{{likes.length}}</span>
+            <img v-if="liked"  class="liked" src="../assets/like.png" aria-labelly="button" alt="bouton de like" />
+            <img @click="addLike(publication.id),getLikes(publication.id),liked = true" v-if="likes.length = 0 || liked == false" class="like" src="../assets/likew.png" aria-labelly="button" alt="bouton de like" />
+            <span class="likes-count">{{likes.length}}</span>
             </div>
             <div   class="comments-count">
-                  <span v-for="comment in comments" :key="comment.id" class="count-number">{{comments.length}}</span>
+                  <span  class="count-number">{{comments.length}}</span>
                   <span class="comments-btn" @click="getAllcomments(publication.id),  (commentsContainer = publication.id)"  >commentaires</span>
                   </div>
             </div>
         <div  v-if="commentsContainer == publication.id" class="comments-container">
             <div  class="comments-card"  v-for="comment in comments"  :key="comment.id">
               <div class="user_pict-link">
-            
-              <img class="user_profile-picture"  alt="photo profil de publication" />
-            
+            <router-link class="user-name" :to="{ name: 'userProfile', params:{userId: comment.User.id}}">
+            <img class="user_profile-picture" :src="comment.User.imageUrl" alt="profil utilisateur " />
+            </router-link>
             </div>
             <div class="comment">
+              <router-link class="user-name" :to="{ name: 'Profile', params:{userId: comment.User.id}}">
+            <span>{{comment.User.firstname}} {{comment.User.lastname}}</span>
+            </router-link>
               <p v-if="modificationInput != comment.id " class="comment-content">{{ comment.content }}</p>
               <textarea v-if="modificationInput == comment.id" name="comment-content_modification" v-model="currentComment.content"></textarea>
               <button v-show="modificationInput == comment.id" @click="updateComment(comment)">Publier</button>
@@ -154,6 +157,7 @@ export default {
       editCommentId:null,
       modificationInput:null,
       commentsContainer: null,
+      liked:false,
       image: null,
       content: "",
       currentPublication: {},
@@ -169,7 +173,7 @@ export default {
     ...mapState({
       user: 'user',
       userInfos:"userInfos",
-      likes: ['likes'],
+      likes: "likes",
       publications:['publications'],
       comments: ['comments'],
     }),
@@ -214,6 +218,11 @@ export default {
       })
       .then((response)=>
       console.log(response));
+    },
+    getLikes(id){
+      this.$store.dispatch("getLikesList",{
+        publicationId: id
+      })
     },
     addComment(id) {
       this.$store
@@ -510,7 +519,7 @@ a {
   width: 2rem;
   height: 2rem;
 }
-.like {
+.like, .liked {
   width: 2rem;
   height: 2rem;
   cursor: pointer;

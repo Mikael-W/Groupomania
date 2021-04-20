@@ -80,14 +80,17 @@
         </span>
         <div class="user_profile-bio">
           <div class="user-bio">
-            <span v-if="bioUi" class="bio-text">{{userInfos.bio}}</span>
+            <span v-if="modificationBio != true" class="bio-text">{{userInfos.bio}}</span>
             <textarea
               class="bio-text"
-              v-model="content"
+              v-model="currentBio.content"
               v-if="modificationBio"
             ></textarea>
-            <button class="edit-bio_btn" @click="(modificationBio == true),(bioUi == false)">
+            <button class="edit-bio_btn" @click="displayCurrentBio(userInfos.bio),(modificationBio = true)" v-if="modificationBio == false">
               Modifier ma bio
+            </button>
+            <button class="edit-bio_btn" @click="editBio()" v-if="modificationBio == true">
+              Publier
             </button>
           </div>
         </div>
@@ -116,7 +119,7 @@ export default {
       userAvatar: null,
       userOverlay: null,
       modificationBio: false,
-      bioUi:true,
+      currentBio:{},
       content: "",
     };
   },
@@ -173,6 +176,10 @@ export default {
       const formData = new FormData();
       formData.append("overlay", this.files);
       this.$store.dispatch("editUserOverlay", formData);
+    },
+    displayCurrentBio(bio){
+      this.currentBio = bio;
+      console.log(bio);
     },
     editBio() {
       const user = this.userInfos;

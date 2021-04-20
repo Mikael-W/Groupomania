@@ -30,7 +30,7 @@
           </div>
         </div>
         <button
-          v-if="userId == userInfos.isAdmin"
+          v-if="userProfile.id == userInfos.isAdmin || userProfile.id == userInfos.id"
           @click="deleteAccount()"
           class="deleteBtn"
         >
@@ -52,15 +52,17 @@ export default {
   name: "userProfile",
   data() {
     return {
-        userId: this.$route.params.userId,
-        userProfile:{}
+        userId : this.$route.params.userId,
+        profile:[]
     };
   },
   components: {
     Header,
   },
   mounted: function () {
-    this.$store.dispatch("getUserProfile")
+    this.$store.dispatch("getUserProfile",{
+        userProfile : this.$route.params.userId
+    })
   },
   computed: {
     ...mapState({
