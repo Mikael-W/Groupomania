@@ -154,7 +154,6 @@ const store = createStore({
     getUserProfile: ({ commit},userProfile) => {
       instance.get(`users/${userProfile.userProfile}`)
         .then(function (response) {
-          console.log(response.data)
           commit('USER_PROFILE', response.data);
         })
         .catch(function (error) {
@@ -174,7 +173,7 @@ const store = createStore({
         });
     },
     editUserBio: ({ state, commit },bio) => {
-      instance.put(`users/${state.user.user}`, {data : bio},
+      instance.put(`users/${state.user.user}`, bio,
       {'Content-Type' : 'application/form-data'})
         .then(response => {
           console.log(response.data)
@@ -191,7 +190,7 @@ const store = createStore({
         .then(response => {
           console.log(response.data)
           commit('SET_USER', file)
-          //window.location.reload();
+          window.location.reload();
         })
         .catch(error => {
           console.log({ error: error })

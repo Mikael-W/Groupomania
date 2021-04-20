@@ -10,36 +10,37 @@
               :src="userProfile.bgUrl || '../assets/photoW.png'"
               alt=""
             />
-          <div class="user-picture">
-            <div class="user-picture_box">
-              <img
-                class="user-img"
-                :src="userProfile.imageUrl || '../assets/photo.png'"
-              />
+            <div class="user-picture">
+              <div class="user-picture_box">
+                <img
+                  class="user-img"
+                  :src="userProfile.imageUrl || '../assets/photo.png'"
+                  alt="photo profil utilisateur"
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="profile-data">
-        <span class="user-name">
-          {{ userProfile.firstname }} {{ userProfile.lastname }}
-        </span>
-        <div class="user_profile-bio">
-          <div class="user-bio">
-            <span class="bio-text">{{userProfile.bio}}</span>
+        <div class="profile-data">
+          <span class="user-name">
+            {{ userProfile.firstname }} {{ userProfile.lastname }}
+          </span>
+          <div class="user_profile-bio">
+            <div class="user-bio">
+              <span class="bio-text">{{ userProfile.bio }}</span>
+            </div>
           </div>
+          <button
+            v-if="userInfos.isAdmin || userProfile.id == userInfos.id"
+            @click="deleteAccount()"
+            class="deleteBtn"
+          >
+            Supprimer le compte
+          </button>
         </div>
-        <button
-          v-if="userProfile.id == userInfos.isAdmin || userProfile.id == userInfos.id"
-          @click="deleteAccount()"
-          class="deleteBtn"
-        >
-          Supprimer le compte
-        </button>
+        <div class="profile-timeline"></div>
       </div>
-      <div class="profile-timeline"></div>
     </div>
-  </div>
   </div>
 </template>
 
@@ -49,42 +50,46 @@ import Header from "@/components/HomeHeader.vue";
 import { mapState } from "vuex";
 
 export default {
-  name: "userProfile",
+  name: "UserProfile",
   data() {
     return {
-        userId : this.$route.params.userId,
-        profile:[]
+      userId: this.$route.params.userId,
+      profile: [],
     };
   },
   components: {
     Header,
   },
   mounted: function () {
-    this.$store.dispatch("getUserProfile",{
-        userProfile : this.$route.params.userId
-    })
+    this.$store.dispatch("getUserProfile", {
+      userProfile: this.$route.params.userId,
+    });
   },
   computed: {
     ...mapState({
       userInfos: "userInfos",
-      userProfile: "userProfile"
+      userProfile: "userProfile",
     }),
   },
   methods: {
-  deleteAccount() {
-    const user = this.userInfos;
-    this.$store
-      .dispatch("deleteAccount", {
-        id: user.id,
-        userId: user.id,
-        isAdmin: user.isAdmin,
-      })
-      .then(function (error) {
-        console.log(error);
-      });
+    deleteAccount() {
+      const user = this.userInfos;
+      this.$store
+        .dispatch("deleteAccount", {
+          id: this.userProfile.id,
+          userId: user.id,
+          isAdmin: user.isAdmin,
+        })
+        .then(function () {
+          this.$router.push("/Home");
+          return;
+        }),
+        function (error) {
+          console.log(error);
+        };
+    },
   },
-}
-}
+};
 </script>
 
 <style scoped>
@@ -212,7 +217,7 @@ export default {
   display: flex;
   justify-content: center;
 }
-.user-bio{
+.user-bio {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -221,12 +226,11 @@ export default {
   width: 35vw;
   min-height: 15vh;
   resize: none;
-  font-size:1.5rem;
+  font-size: 1.5rem;
   text-align: center;
-  color:#042a5f;
-  ;
+  color: #042a5f;
 }
-.edit-bio_btn{
+.edit-bio_btn {
   margin-top: 1rem;
   font-size: 1.3rem;
   background: transparent;
@@ -254,11 +258,11 @@ export default {
   background: whitesmoke;
   color: black;
 }
-.edit-avatar_btn:hover, 
+.edit-avatar_btn:hover,
 .validate-profil_Btn:hover,
-.edit-bio_btn:hover{
+.edit-bio_btn:hover {
   background: #042a5f;
-  color:white;
+  color: white;
 }
 .deleteBtn {
   margin-top: 1.5rem;
@@ -269,45 +273,45 @@ export default {
   border-radius: 8px;
   cursor: pointer;
 }
-.deleteBtn:hover{
+.deleteBtn:hover {
   background: red;
-  color:white;
+  color: white;
 }
-.action-btn_pictures{
+.action-btn_pictures {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.validate-profil_Btn{
-  margin-top: 12px ;
+.validate-profil_Btn {
+  margin-top: 12px;
   background: transparent;
   border-radius: 8px;
   border: 2px solid #042a5f;
   color: #042a5f;
 }
-@media  screen and (max-width: 767px){
-  .profile-pictures{
-    width:100%
+@media screen and (max-width: 767px) {
+  .profile-pictures {
+    width: 100%;
   }
-  .profile-data{
-    width:100%;
+  .profile-data {
+    width: 100%;
   }
-  .profile-pictures{
-    width:100%;
+  .profile-pictures {
+    width: 100%;
   }
-  .user_profile{
-    width:100%;
+  .user_profile {
+    width: 100%;
   }
-  .user_profile-pictures{
+  .user_profile-pictures {
     width: 100vw;
   }
-  .user-bg_box{
-    width:100%;
+  .user-bg_box {
+    width: 100%;
   }
-  .user-bg{
-    width:100%;
+  .user-bg {
+    width: 100%;
   }
-  .file-overlay_preview{
+  .file-overlay_preview {
     width: 100%;
   }
 }

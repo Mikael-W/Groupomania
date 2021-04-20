@@ -1,16 +1,43 @@
 <template>
   <div class="timeline-container">
-      <div class="publication-container">
-          <div  v-for="publication in publications"  :key="publication.id"  class="publication-card">
-            <div class="profile-publication">
-          <router-link class="user-name" :to="{ name: 'userProfile', params:{userId: publication.User.id}}">
-          <img class="user_profile-picture" :src="publication.User.imageUrl" alt="profil utilisateur " />
+    <div class="publication-container">
+      <div
+        v-for="publication in publications"
+        :key="publication.id"
+        class="publication-card"
+      >
+        <div class="profile-publication">
+          <router-link
+            class="user-name"
+            :to="{
+              name: 'UserProfile',
+              params: { userId: publication.User.id },
+            }"
+          >
+            <img
+              class="user_profile-picture"
+              :src="publication.User.imageUrl"
+              alt="profil utilisateur "
+            />
           </router-link>
-          <router-link class="user-name" :to="{ name: 'userProfile', params:{userId: publication.User.id}}">
-          <span>{{publication.User.firstname}} {{publication.User.lastname}}</span>
+          <router-link
+            class="user-name"
+            :to="{
+              name: 'UserProfile',
+              params: { userId: publication.User.id },
+            }"
+          >
+            <span
+              >{{ publication.User.firstname }}
+              {{ publication.User.lastname }}</span
+            >
           </router-link>
           <button @click="editMenu = true">
-            <img class="modif-icon" src="../assets/points.png" alt="bouton modification publication" />
+            <img
+              class="modif-icon"
+              src="../assets/points.png"
+              alt="bouton modification publication"
+            />
           </button>
           <div v-show="editMenu" class="editMenu">
             <button
@@ -28,65 +55,164 @@
           </div>
         </div>
         <div class="publication-content">
-            <p class="publication-text">{{ publication.content }}</p>
+          <p class="publication-text">{{ publication.content }}</p>
         </div>
-        <img class="timeline-picture" :src="publication.imageUrl" alt="image de la publication" />
+        <img
+          class="timeline-picture"
+          :src="publication.imageUrl"
+          alt="image de la publication"
+        />
         <div class="interactions-count">
-            <div class="likes-count">
-            <img v-if="liked"  class="liked" src="../assets/like.png" aria-labelly="button" alt="bouton de like" />
-            <img @click="addLike(publication.id),getLikes(publication.id),liked = true" v-if="likes.length = 0 || liked == false" class="like" src="../assets/likew.png" aria-labelly="button" alt="bouton de like" />
-            <span class="likes-count">{{likes.length}}</span>
-            </div>
-            <div   class="comments-count">
-                  <span  class="count-number">{{comments.length}}</span>
-                  <span class="comments-btn" @click="getAllcomments(publication.id),  (commentsContainer = publication.id)"  >commentaires</span>
-                  </div>
-            </div>
-        <div  v-if="commentsContainer == publication.id" class="comments-container">
-            <div  class="comments-card"  v-for="comment in comments"  :key="comment.id">
-              <div class="user_pict-link">
-            <router-link class="user-name" :to="{ name: 'userProfile', params:{userId: comment.User.id}}">
-            <img class="user_profile-picture" :src="comment.User.imageUrl" alt="profil utilisateur " />
-            </router-link>
+          <div class="likes-count">
+            <img
+              v-if="liked"
+              class="liked"
+              src="../assets/like.png"
+              aria-labelly="button"
+              alt="bouton de like"
+            />
+            <img
+              @click="
+                addLike(publication.id),
+                  getLikes(publication.id),
+                  (liked = true)
+              "
+              v-if="(likes.length = 0 || liked == false)"
+              class="like"
+              src="../assets/likew.png"
+              aria-labelly="button"
+              alt="bouton de like"
+            />
+          </div>
+          <div class="comments-count">
+            <span
+              class="comments-btn"
+              @click="
+                getAllcomments(publication.id),
+                  (commentsContainer = publication.id)
+              "
+              >commentaires</span
+            >
+          </div>
+        </div>
+        <div
+          v-if="commentsContainer == publication.id"
+          class="comments-container"
+        >
+          <div
+            class="comments-card"
+            v-for="comment in comments"
+            :key="comment.id"
+          >
+            <div class="user_pict-link">
+              <router-link
+                class="user-name"
+                :to="{
+                  name: 'UserProfile',
+                  params: { userId: comment.User.id },
+                }"
+              >
+                <img
+                  class="user_profile-picture"
+                  :src="comment.User.imageUrl"
+                  alt="profil utilisateur "
+                />
+              </router-link>
             </div>
             <div class="comment">
-              <router-link class="user-name" :to="{ name: 'Profile', params:{userId: comment.User.id}}">
-            <span>{{comment.User.firstname}} {{comment.User.lastname}}</span>
-            </router-link>
-              <p v-if="modificationInput != comment.id " class="comment-content">{{ comment.content }}</p>
-              <textarea v-if="modificationInput == comment.id" name="comment-content_modification" v-model="currentComment.content"></textarea>
-              <button v-show="modificationInput == comment.id" @click="updateComment(comment)">Publier</button>
+              <router-link
+                class="user-name"
+                :to="{
+                  name: 'UserProfile',
+                  params: { userId: comment.User.id },
+                }"
+              >
+                <span
+                  >{{ comment.User.firstname }}
+                  {{ comment.User.lastname }}</span
+                >
+              </router-link>
+              <p v-if="modificationInput != comment.id" class="comment-content">
+                {{ comment.content }}
+              </p>
+              <textarea
+                v-if="modificationInput == comment.id"
+                name="commentmofif"
+                class="comment-content_modification"
+                v-model="currentComment.content"
+              ></textarea>
+              <button
+                v-show="modificationInput == comment.id"
+                @click="updateComment(comment)"
+              >
+                Publier
+              </button>
             </div>
             <div class="comment-action_box">
-            <button @click="(editCommentId = comment.id)"> 
-            <img class="comment-modification_img" src="../assets/points.png" alt="menu modification commentaire" />
-            </button>
-            <div class="edit-comment_menu" v-show="editCommentId == comment.id">
-                <button @click="displayModificationComment(comment), (modificationInput = comment.id),(editCommentId = null)">Modifier</button>
-                <button @click="deleteComment(comment),(editCommentId = null)">Supprimer</button>
-            </div>
-            </div>
-          </div>
-            <div class="user_comment-container">
-              <div class="user_pict-link">
-                <img class="user_profile-picture" :src="userInfos.imageUrl" alt="" />
-                <div class="sendbox-comment">
-                <textarea v-model="content" type="text-content" class="post-comment_container" placeholder="Votre commentaire..."/>
-                <button @click="addComment(publication.id)" class="comment-btn" >
-                  <img class="comment-send" src="../assets/send.png" alt="bouton d'envoi commentaire" aria-label="button" />
+              <button @click="editCommentId = comment.id">
+                <img
+                  class="comment-modification_img"
+                  src="../assets/points.png"
+                  alt="menu modification commentaire"
+                />
+              </button>
+              <div
+                class="edit-comment_menu"
+                v-show="editCommentId == comment.id"
+              >
+                <button
+                  @click="
+                    displayModificationComment(comment),
+                      (modificationInput = comment.id),
+                      (editCommentId = null)
+                  "
+                >
+                  Modifier
+                </button>
+                <button @click="deleteComment(comment), (editCommentId = null)">
+                  Supprimer
                 </button>
               </div>
             </div>
-         </div>
+          </div>
+          <div class="user_comment-container">
+            <div class="user_pict-link">
+              <img
+                class="user_profile-picture"
+                :src="userInfos.imageUrl"
+                alt=""
+              />
+              <div class="sendbox-comment">
+                <textarea
+                  v-model="content"
+                  type="text-content"
+                  class="post-comment_container"
+                  placeholder="Votre commentaire..."
+                />
+                <button @click="addComment(publication.id)" class="comment-btn">
+                  <img
+                    class="comment-send"
+                    src="../assets/send.png"
+                    alt="bouton d'envoi commentaire"
+                    aria-label="button"
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
     <teleport to="#modals">
       <div v-if="editModal" class="edit-modal">
         <div class="overlay"></div>
         <div class="userProfile">
           <div class="user_pict-link">
-            <img class="user_profile-picture" :src="userInfos.imageUrl" alt="profil utilisateur " />
+            <img
+              class="user_profile-picture"
+              :src="userInfos.imageUrl"
+              alt="profil utilisateur "
+            />
             <span>Modifier la publication</span>
           </div>
           <button @click="editModal = false" class="closemodalbtn">X</button>
@@ -154,28 +280,27 @@ export default {
     return {
       editMenu: false,
       editModal: false,
-      editCommentId:null,
-      modificationInput:null,
+      editCommentId: null,
+      modificationInput: null,
       commentsContainer: null,
-      liked:false,
+      liked: false,
       image: null,
       content: "",
       currentPublication: {},
-      currentComment:{},
+      currentComment: {},
     };
   },
-  components: {
-  },
+  components: {},
   mounted: function () {
     this.$store.dispatch("getPublications");
   },
   computed: {
     ...mapState({
-      user: 'user',
-      userInfos:"userInfos",
+      user: "user",
+      userInfos: "userInfos",
       likes: "likes",
-      publications:['publications'],
-      comments: ['comments'],
+      publications: ["publications"],
+      comments: ["comments"],
     }),
   },
   methods: {
@@ -209,20 +334,20 @@ export default {
         currentPublication.id,
       ]);
     },
-    addLike(id){
-      const user = this.userInfos
-      this.$store.dispatch('addLikes',{
-        userId: user.id,
-        publicationId: id,
-        like : 1
-      })
-      .then((response)=>
-      console.log(response));
+    addLike(id) {
+      const user = this.userInfos;
+      this.$store
+        .dispatch("addLikes", {
+          userId: user.id,
+          publicationId: id,
+          like: 1,
+        })
+        .then((response) => console.log(response));
     },
-    getLikes(id){
-      this.$store.dispatch("getLikesList",{
-        publicationId: id
-      })
+    getLikes(id) {
+      this.$store.dispatch("getLikesList", {
+        publicationId: id,
+      });
     },
     addComment(id) {
       this.$store
@@ -243,49 +368,47 @@ export default {
         id: id,
       });
     },
-    displayModificationComment(comment){
+    displayModificationComment(comment) {
       this.currentComment = comment;
-      console.log(comment)
+      console.log(comment);
     },
-    updateComment(comment){
-      this.$store.dispatch('updateComment',{
-        id : comment.id,
+    updateComment(comment) {
+      this.$store.dispatch("updateComment", {
+        id: comment.id,
         userId: comment.userId,
         publicationId: comment.publicationId,
-        content: comment.content
-      })
+        content: comment.content,
+      });
       this.modificationInput = null;
     },
-    deleteComment(comment){
-      const user = this.userInfos
-      console.log(comment)
-      console.log(user)
-    this.$store
+    deleteComment(comment) {
+      const user = this.userInfos;
+      console.log(comment);
+      console.log(user);
+      this.$store
         .dispatch("deleteComment", {
           userId: user.id,
           isAdmin: user.isAdmin,
           id: comment.id,
           commentUserId: comment.userId,
-          publicationId:comment.publicationId,
+          publicationId: comment.publicationId,
         })
         .then(function (error) {
-            console.log(error);
-          }
-        );
+          console.log(error);
+        });
     },
     deletePublication(id, userId) {
-      const user = this.userInfos
+      const user = this.userInfos;
       this.$store
         .dispatch("deletePublication", {
           id: id,
           publicationUserId: userId,
           userId: user.id,
-          isAdmin: user.isAdmin
+          isAdmin: user.isAdmin,
         })
         .then(function (error) {
-            console.log(error);
-          }
-        );
+          console.log(error);
+        });
     },
   },
 };
@@ -305,9 +428,9 @@ export default {
   align-items: center;
   width: 100%;
 }
-.publication-text{
-  padding:1.5rem;
-  margin:0;
+.publication-text {
+  padding: 1.5rem;
+  margin: 0;
 }
 .publication-card {
   position: relative;
@@ -316,27 +439,26 @@ export default {
   margin: 1rem 0;
   border-radius: 6px;
 }
-.profile-publication{
+.profile-publication {
   position: relative;
-  display:flex;
+  display: flex;
   align-items: center;
 }
-.modif-icon{
+.modif-icon {
   position: absolute;
-  top:1rem;
-  right:1rem;
+  top: 1rem;
+  right: 1rem;
   width: 1rem;
 }
-.editMenu{
+.editMenu {
   position: absolute;
   align-items: flex-end;
-  top:1.5rem;
-  right:5px;
+  top: 1.5rem;
+  right: 5px;
   width: 30%;
   text-align: center;
   border: 1px soli #d3d3d3;
   box-shadow: 5px 5px 5px #d3d3d3;
-
 }
 button {
   appearance: none;
@@ -461,11 +583,19 @@ a {
   margin: 10px 0;
 }
 .comment {
+  display: flex;
+  flex-direction: column;
   width: fit-content;
   height: fit-content;
   max-width: 70%;
   background: #d3d3d3;
   border-radius: 8px;
+}
+.comment-content_modification{
+  resize:none;
+  background: #D3d3d3;
+  font-family: poppins, sans-serif;
+  ;
 }
 .comment-modification_img {
   width: 1rem;
@@ -475,10 +605,10 @@ a {
   border-radius: 100%;
   background: #d3d3d3;
 }
-.edit-comment_menu{
+.edit-comment_menu {
   width: fit-content;
-  height:fit-content;
-  box-shadow: 10px 10px 10px #d3d3d3
+  height: fit-content;
+  box-shadow: 10px 10px 10px #d3d3d3;
 }
 .comment-content {
   padding: 0 10px;
@@ -519,22 +649,23 @@ a {
   width: 2rem;
   height: 2rem;
 }
-.like, .liked {
+.like,
+.liked {
   width: 2rem;
   height: 2rem;
   cursor: pointer;
 }
-.comments-btn{
+.comments-btn {
   cursor: pointer;
 }
 .count-number {
   margin: 0 5px;
 }
 @media screen and (max-width: 767px) {
-  .timeline-container{
+  .timeline-container {
     width: 100vw;
   }
-  .publication-card{
+  .publication-card {
     width: 100vw;
   }
 }

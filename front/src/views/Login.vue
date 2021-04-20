@@ -2,40 +2,80 @@
   <div class="connexion-layout">
     <div class="rightlogintitle">
       <img src="../assets/logoheader.png" alt="groupomamia logo" />
-      <span class="slogan" aria-label="label">L'application qui rapproche les collaborateurs</span>
+      <span class="slogan" aria-label="label"
+        >L'application qui rapproche les collaborateurs</span
+      >
     </div>
     <div class="userlog">
-      <input v-model="email" type="email" placeholder="Email" aria-label="email"  />
-      <input v-model="password" type="password" placeholder="Mot de passe" aria-label="password" />
-      <div class="form-row" v-if=" status == 'error_login'">
+      <input
+        v-model="email"
+        type="email"
+        placeholder="Email"
+        aria-label="email"
+      />
+      <input
+        v-model="password"
+        type="password"
+        placeholder="Mot de passe"
+        aria-label="password"
+      />
+      <div class="form-row" v-if="status == 'error_login'">
         Adresse mail et/ou mot de passe invalide
       </div>
       <button @click="login()" class="logbtn">Connexion</button>
       <span>Pas encore inscrit ?</span>
-      <button @click="signupModal = true" class="signup-front-btn" aria-label="button">Créer un compte</button>
+      <button
+        @click="signupModal = true"
+        class="signup-front-btn"
+        aria-label="button"
+      >
+        Créer un compte
+      </button>
     </div>
     <teleport to="#modals">
       <div v-if="signupModal" class="Signup-modal">
         <div class="overlay"></div>
-          <div class="user-signup">
-            <div class="signup-title">
+        <div class="user-signup">
+          <div class="signup-title">
             <h1>S'inscrire</h1>
             <p>C'est facile et rapide !</p>
-            </div>
-            <button @click="signupModal=false" class="closemodalbtn">X</button>
-            <div class="signup-form">
-            <div class="names">
-            <input v-model="firstname" class="fname" type="text" placeholder="Prénom" />
-            <input v-model="lastname" class="lname" type="text" placeholder="Nom de famille" />
-            </div>
-            <input v-model="email" type="Email" placeholder="Email" aria-label="email" />
-            <input v-model="password" type="password" placeholder="Mot de passe" aria-label="password"/>
-            <div class="form-row" v-if=" status == 'error_create'">
-            Adresse mail incorrect
-            </div>
-            <button @click="createAccount()" class="signup-btn">S'incrire</button>
-            </div>
           </div>
+          <button @click="signupModal = false" class="closemodalbtn">X</button>
+          <div class="signup-form">
+            <div class="names">
+              <input
+                v-model="firstname"
+                class="fname"
+                type="text"
+                placeholder="Prénom"
+              />
+              <input
+                v-model="lastname"
+                class="lname"
+                type="text"
+                placeholder="Nom de famille"
+              />
+            </div>
+            <input
+              v-model="email"
+              type="Email"
+              placeholder="Email"
+              aria-label="email"
+            />
+            <input
+              v-model="password"
+              type="password"
+              placeholder="Mot de passe"
+              aria-label="password"
+            />
+            <div class="form-row" v-if="status == 'error_create'">
+              Adresse mail ou mot de passe incorrect
+            </div>
+            <button @click="createAccount()" class="signup-btn">
+              S'incrire
+            </button>
+          </div>
+        </div>
       </div>
     </teleport>
     <footer>
@@ -45,55 +85,64 @@
 </template>
 
 <script>
-
-import { mapState } from 'vuex'
+import { mapState } from "vuex";
 
 export default {
-  data () {
-    return{
-      signupModal:false,
-      email:'',
-      firstname:'',
-      lastname:'',
-      password:'',
-    }
+  data() {
+    return {
+      signupModal: false,
+      email: "",
+      firstname: "",
+      lastname: "",
+      password: "",
+    };
   },
-  mounted: function (){
+  mounted: function () {
     if (this.$store.state.user.userId != -1) {
-      this.$router.push('/Profile');
-      return ;
+      this.$router.push("/Profile");
+      return;
     }
   },
-  computed:{
-  ...mapState(['status'])
-},
+  computed: {
+    ...mapState(["status"]),
+  },
   methods: {
-    login: function (){
+    login: function () {
       const self = this;
-      this.$store.dispatch('login',{
-        email: this.email, 
-        password:this.password
-      }).then(function (){
-       self.$router.push('/Profile');
-      },function(error){
-        console.log (error);
-      })
+      this.$store
+        .dispatch("login", {
+          email: this.email,
+          password: this.password,
+        })
+        .then(
+          function () {
+            self.$router.push("/Profile");
+          },
+          function (error) {
+            console.log(error);
+          }
+        );
     },
-    createAccount: function(){
+    createAccount: function () {
       const self = this;
-      this.$store.dispatch('createAccount',{
-        email: this.email,
-        firstname: this.firstname,
-        lastname: this.lastname,
-        password:this.password
-      }).then(function (){
-        self.login();
-      },function(error){
-        console.log (error);
-      })
+      this.$store
+        .dispatch("createAccount", {
+          email: this.email,
+          firstname: this.firstname,
+          lastname: this.lastname,
+          password: this.password,
+        })
+        .then(
+          function () {
+            self.login();
+          },
+          function (error) {
+            console.log(error);
+          }
+        );
     },
-  }
-}
+  },
+};
 </script>
 
 <style>
@@ -116,7 +165,7 @@ export default {
   margin: 5vh 0;
   background: #042a5f;
 }
-.slogan{
+.slogan {
   font-size: 2rem;
   color: white;
   margin: 3rem 1.5rem 0 1.5rem;
@@ -129,7 +178,7 @@ h1 {
   font-size: 2rem;
   color: #042a5f;
 }
-p{
+p {
   font-size: 1rem;
   color: #042a5f;
 }
@@ -161,12 +210,13 @@ input {
   font-size: 100%;
   margin: 3vh 0;
   background: #042a5f;
-  border-style: none;;
+  border-style: none;
   border-radius: 6px;
   color: white;
   font-weight: bold;
 }
-.signup-btn, .signup-front-btn {
+.signup-btn,
+.signup-front-btn {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -181,98 +231,99 @@ input {
   text-align: center;
   border-style: none;
 }
-.closemodalbtn{
+.closemodalbtn {
   position: absolute;
-  top:1rem;
-  right:0.5rem;
+  top: 1rem;
+  right: 0.5rem;
   border: none;
   background: white;
   color: #042a5f;
   font-weight: bold;
-  font-size:1rem;
+  font-size: 1rem;
   cursor: pointer;
 }
 a {
   text-decoration: none;
 }
-.Signup-modal{
+.Signup-modal {
   position: fixed;
-  top:0;
-  bottom:0;
-  left:0;
-  right:0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   width: 100vw;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.overlay{
+.overlay {
   background: rgba(255, 255, 255, 0.7);
   position: fixed;
-  top:0;
-  bottom:0;
-  left:0;
-  right:0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
-.user-signup{
+.user-signup {
   z-index: 1;
   position: relative;
   width: 50vw;
-  height:auto;
+  height: auto;
   align-items: center;
   background: white;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 12px 12px 2px 1px rgba(0, 0, 0, 0.1);;
+  box-shadow: 12px 12px 2px 1px rgba(0, 0, 0, 0.1);
 }
-.signup-title{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width:100%;
-}
-.signup-form{
+.signup-title {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
 }
-.names{
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.names {
   display: flex;
   justify-content: space-between;
-  width:90%;
+  width: 90%;
 }
-.fname{
+.fname {
   width: 45%;
 }
-.lname{
+.lname {
   width: 50%;
 }
-footer{
+footer {
   position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
-  bottom:0;
+  bottom: 0;
   width: 100vw;
   height: 50px;
-  color:#ededed;
+  color: #ededed;
   font-weight: bold;
   background: #042a5f;
 }
-.rl-color{
-  color:white;
+.rl-color {
+  color: white;
 }
 @media screen and (max-width: 767px) {
-  .connexion-layout{
+  .connexion-layout {
     display: flex;
     flex-direction: column;
   }
-  .rightlogintitle, .userlog{
+  .rightlogintitle,
+  .userlog {
     width: 100vw;
     padding-top: 1.5rem;
   }
-  .user-signup{
+  .user-signup {
     width: 100vw;
   }
 }

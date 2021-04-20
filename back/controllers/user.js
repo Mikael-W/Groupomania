@@ -166,7 +166,7 @@ module.exports = {
       // Destroy
       let user = await models.User.findOne({where:{id: idToDelete}});
       user.destroy()
-      res.statuts(200).json({message: "compte supprimé"})
+      res.status(200).json({message: "compte supprimé", hooks :true})
     }catch (error){
       res.status(400).json({error})
     }

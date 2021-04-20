@@ -1,0 +1,32 @@
+{ 
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Launch Program",
+        "program": "${workspaceFolder}/back/server.js",
+        "request": "launch",
+        "skipFiles": [
+          "<node_internals>/**"
+        ],
+        "type": "pwa-node"
+      },
+      {
+        "type": "chrome",
+        "request": "launch",
+        "name": "vuejs: chrome",
+        "url": "http://localhost:8080",
+        "webRoot": "${workspaceFolder}/src",
+        "breakOnLoad": true,
+        "sourceMapPathOverrides": {
+          "webpack:///src/*": "${webRoot}/*"
+        }
+      },
+      {
+        "type": "chrome",
+        "request": "launch",
+        "name": "vuejs: firefox",
+        "url": "http://localhost:8080",
+        "webRoot": "${workspaceFolder}/front/src"
+      },
+    ]  
+  }

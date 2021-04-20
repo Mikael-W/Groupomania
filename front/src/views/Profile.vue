@@ -7,18 +7,15 @@
           <div class="user-bg_box">
             <img
               class="user-bg"
-              v-if="userOverlay == null"
-              :src="userInfos.bgUrl || '../assets/photoW.png'"
+              v-if="userInfos.bgUrl || userOverlay"
+              :src="userInfos.bgUrl || userOverlay"
               alt="overlay profil utlisateur"
             />
-            <div class="file-overlay_preview">
-              <img
-                class="file-overlay_picture"
-                v-if="userOverlay"
-                :src="userOverlay"
-                alt="preview overlay utilisateur"
-              />
-            </div>
+            <img
+              class="user-bg"
+              src="../assets/photo.png"
+              alt="overlay profil utlisateur"
+            />
             <input
               aria-label="button"
               class="file-upload_bnt"
@@ -39,57 +36,77 @@
             <div class="user-picture_box">
               <img
                 class="user-img"
-                v-show="userAvatar == null"
-                :src="userInfos.imageUrl || '../assets/photo.png'"
+                :src="userInfos.imageUrl || userAvatar"
                 alt="image profil utilisateur"
               />
-              <div class="file-preview">
-                <img
-                  class="file-preview_image"
-                  v-if="userAvatar"
-                  :src="userAvatar"
-                  alt="preview photo profil utilisateur"
-                />
-              </div>
-              <button @click="onPickAvatar" class="edit-picture_btn">
-                <img class="user-img_edit" src="../assets/photo.png" alt="bouton upload image" />
-              </button>
-              <input
-                class="file-upload_bnt"
-                aria-label="button"
-                type="file"
-                ref="avatar"
-                accept="image/*"
-                @change="onAvatarPicked"
+              <img
+                class="user-default"
+                src="../assets/photo.png"
+                alt="image profil utilisateur"
               />
+              <button @click="onPickAvatar" class="edit-picture_btn">
+                <img
+                  class="user-bg_edit"
+                  src="../assets/photo.png"
+                  alt="overlay profil utilisateur"
+                />changer la photo de profile
+              </button>
             </div>
+            <input
+              class="file-upload_bnt"
+              aria-label="button"
+              type="file"
+              ref="avatar"
+              accept="image/*"
+              @change="onAvatarPicked"
+            />
           </div>
         </div>
       </div>
       <div class="profile-data">
         <div class="action-btn_pictures">
-            <button v-if="userOverlay != null" class="validate-profil_Btn" @click="editUserOverlay()">
-              Publier Overlay
-            </button>
-            <button v-if="userAvatar != null" class="validate-profil_Btn" @click="editUserAvatar()">
-              Publier
-            </button>
-          </div>
+          <button
+            v-if="userOverlay != null"
+            class="validate-profil_Btn"
+            @click="editUserOverlay()"
+          >
+            Publier Overlay
+          </button>
+          <button
+            v-if="userAvatar != null"
+            class="validate-profil_Btn"
+            @click="editUserAvatar()"
+          >
+            Publier
+          </button>
+        </div>
         <span class="user-name">
           {{ userInfos.firstname }} {{ userInfos.lastname }}
         </span>
         <div class="user_profile-bio">
           <div class="user-bio">
-            <span v-if="modificationBio != true" class="bio-text">{{userInfos.bio}}</span>
+            <span v-if="modificationBio != true" class="bio-text">{{
+              userInfos.bio
+            }}</span>
             <textarea
               class="bio-text"
-              v-model="currentBio.content"
+              v-model="currentProfileUser.bio"
               v-if="modificationBio"
             ></textarea>
-            <button class="edit-bio_btn" @click="displayCurrentBio(userInfos.bio),(modificationBio = true)" v-if="modificationBio == false">
+            <button
+              class="edit-bio_btn"
+              @click="
+                displayCurrentProfileUser(userInfos), (modificationBio = true)
+              "
+              v-if="modificationBio == false"
+            >
               Modifier ma bio
             </button>
-            <button class="edit-bio_btn" @click="editBio()" v-if="modificationBio == true">
+            <button
+              class="edit-bio_btn"
+              @click="editProfileUser(currentProfileUser)"
+              v-if="modificationBio == true"
+            >
               Publier
             </button>
           </div>
@@ -102,7 +119,6 @@
           Supprimer le compte
         </button>
       </div>
-      <div class="profile-timeline"></div>
     </div>
   </div>
 </template>
@@ -119,8 +135,7 @@ export default {
       userAvatar: null,
       userOverlay: null,
       modificationBio: false,
-      currentBio:{},
-      content: "",
+      currentProfileUser: {},
     };
   },
   components: {
@@ -177,15 +192,13 @@ export default {
       formData.append("overlay", this.files);
       this.$store.dispatch("editUserOverlay", formData);
     },
-    displayCurrentBio(bio){
-      this.currentBio = bio;
-      console.log(bio);
+    displayCurrentProfileUser(userInfos) {
+      this.currentProfileUser = userInfos;
+      console.log(userInfos);
     },
-    editBio() {
-      const user = this.userInfos;
+    editProfileUser(currentProfileUser) {
       this.$store.dispatch("editUserBio", {
-        image: user.imageUrl,
-        bio: JSON.stringify(this.content),
+        bio: currentProfileUser.bio,
       });
     },
   },
@@ -224,6 +237,8 @@ export default {
 .user_profile-pictures {
   position: relative;
   display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 60vw;
   height: 35vh;
 }
@@ -266,29 +281,43 @@ export default {
 .file-upload_bnt {
   display: none;
 }
-.user-bg {
-  width: 60vw;
-  height: 35vh;
-  border-radius: 6px;
-  background: white;
-}
 .user-picture {
   position: absolute;
   bottom: -30px;
-  width: 100%;
+  width: 50vw;
+  z-index: 99999;
+  background: red;
+}
+.user-picture_box {
+  position: relative;
+  width: 50vw;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.user-picture_box {
-  position: relative;
-}
 .user-img {
+  position: absolute;
+  bottom: 0;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  border: 1px solid black;
+  z-index: 2;
+}
+.user-default {
+  position: absolute;
+  bottom: 0;
   width: 170px;
   height: 170px;
   border-radius: 50%;
   border: 1px solid black;
   z-index: 1;
+}
+.user-bg {
+  width: 60vw;
+  height: 35vh;
+  border-radius: 6px;
+  background: white;
 }
 .user-img_edit {
   border-radius: 100%;
@@ -297,15 +326,14 @@ export default {
 .edit-picture_btn {
   position: absolute;
   z-index: 10;
-  bottom: 10px;
-  right: 1rem;
-  border: solid 1px grey;
-  border-radius: 100%;
+  bottom: 0;
+  right: -50px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  width: 2rem;
-  height: 2rem;
+  background: white;
+  border-radius: 8px;
+  border: solid 1px grey;
+  width: 35%;
   cursor: pointer;
 }
 .profile-data {
@@ -329,7 +357,7 @@ export default {
   display: flex;
   justify-content: center;
 }
-.user-bio{
+.user-bio {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -338,12 +366,11 @@ export default {
   width: 35vw;
   min-height: 15vh;
   resize: none;
-  font-size:1.5rem;
+  font-size: 1.5rem;
   text-align: center;
-  color:#042a5f;
-  ;
+  color: #042a5f;
 }
-.edit-bio_btn{
+.edit-bio_btn {
   margin-top: 1rem;
   font-size: 1.3rem;
   background: transparent;
@@ -371,11 +398,11 @@ export default {
   background: whitesmoke;
   color: black;
 }
-.edit-avatar_btn:hover, 
+.edit-avatar_btn:hover,
 .validate-profil_Btn:hover,
-.edit-bio_btn:hover{
+.edit-bio_btn:hover {
   background: #042a5f;
-  color:white;
+  color: white;
 }
 .deleteBtn {
   margin-top: 1.5rem;
@@ -386,45 +413,45 @@ export default {
   border-radius: 8px;
   cursor: pointer;
 }
-.deleteBtn:hover{
+.deleteBtn:hover {
   background: red;
-  color:white;
+  color: white;
 }
-.action-btn_pictures{
+.action-btn_pictures {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.validate-profil_Btn{
-  margin-top: 12px ;
+.validate-profil_Btn {
+  margin-top: 12px;
   background: transparent;
   border-radius: 8px;
   border: 2px solid #042a5f;
   color: #042a5f;
 }
-@media  screen and (max-width: 767px){
-  .profile-pictures{
-    width:100%
+@media screen and (max-width: 767px) {
+  .profile-pictures {
+    width: 100%;
   }
-  .profile-data{
-    width:100%;
+  .profile-data {
+    width: 100%;
   }
-  .profile-pictures{
-    width:100%;
+  .profile-pictures {
+    width: 100%;
   }
-  .user_profile{
-    width:100%;
+  .user_profile {
+    width: 100%;
   }
-  .user_profile-pictures{
+  .user_profile-pictures {
     width: 100vw;
   }
-  .user-bg_box{
-    width:100%;
+  .user-bg_box {
+    width: 100%;
   }
-  .user-bg{
-    width:100%;
+  .user-bg {
+    width: 100%;
   }
-  .file-overlay_preview{
+  .file-overlay_preview {
     width: 100%;
   }
 }
